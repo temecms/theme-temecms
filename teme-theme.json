@@ -1,0 +1,256 @@
+{
+    "manifest": 1,
+    "code": "temecms",
+    "name": "TemeCMS",
+    "version": "0.1.0",
+    "description": "The theme of temecms.com, Teme's own public site: a product home page, documentation, plugin and theme directories, and a blog, in neutral grounds with the Ember accent.",
+    "author": "TemeCMS",
+    "author_url": "https://github.com/temecms",
+    "homepage": "https://github.com/temecms",
+    "license": "MIT",
+    "requires": {
+        "teme": ">=0.8.0-alpha.1 <1.0"
+    },
+    "title_separator": "·",
+    "per_page": 100,
+    "breadcrumbs": true,
+    "layout": {
+        "content": 760,
+        "wide": 1200,
+        "full": null
+    },
+    "images": {
+        "content": "(min-width: 48rem) 760px, 100vw",
+        "wide": "(min-width: 75rem) 1200px, 100vw",
+        "shot": "(min-width: 75rem) 1200px, (min-width: 60rem) 66vw, 100vw",
+        "card": "(min-width: 64rem) 380px, (min-width: 40rem) 45vw, 100vw",
+        "thumb": "(min-width: 40rem) 224px, 100vw"
+    },
+    "fonts": [
+        {
+            "family": "IBM Plex Sans",
+            "file": "fonts/ibm-plex-sans-latin-400-normal.woff2",
+            "weight": 400,
+            "style": "normal",
+            "preload": true
+        },
+        {
+            "family": "IBM Plex Sans",
+            "file": "fonts/ibm-plex-sans-latin-500-normal.woff2",
+            "weight": 500,
+            "style": "normal"
+        },
+        {
+            "family": "IBM Plex Sans",
+            "file": "fonts/ibm-plex-sans-latin-600-normal.woff2",
+            "weight": 600,
+            "style": "normal"
+        },
+        {
+            "family": "IBM Plex Serif",
+            "file": "fonts/ibm-plex-serif-latin-400-normal.woff2",
+            "weight": 400,
+            "style": "normal"
+        },
+        {
+            "family": "IBM Plex Serif",
+            "file": "fonts/ibm-plex-serif-latin-400-italic.woff2",
+            "weight": 400,
+            "style": "italic"
+        },
+        {
+            "family": "IBM Plex Serif",
+            "file": "fonts/ibm-plex-serif-latin-600-normal.woff2",
+            "weight": 600,
+            "style": "normal"
+        },
+        {
+            "family": "IBM Plex Mono",
+            "file": "fonts/ibm-plex-mono-latin-400-normal.woff2",
+            "weight": 400,
+            "style": "normal"
+        },
+        {
+            "family": "IBM Plex Mono",
+            "file": "fonts/ibm-plex-mono-latin-500-normal.woff2",
+            "weight": 500,
+            "style": "normal"
+        }
+    ],
+    "tokens": {
+        "base": "#fcfcfc",
+        "contrast": "#1d1e20",
+        "accent": "#b03f00",
+        "on-accent": "#fffaf7",
+        "muted": "oklch(0.43 0.004 260)",
+        "rule": "oklch(0.922 0.002 260)",
+        "font-body": "IBM Plex Sans, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
+        "font-heading": "IBM Plex Sans, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
+        "font-mono": "IBM Plex Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    },
+    "tokens_dark": {
+        "base": "#131314",
+        "contrast": "#f1f1f2",
+        "accent": "#f98759",
+        "on-accent": "#2a1208",
+        "muted": "oklch(0.80 0.003 260)",
+        "rule": "oklch(0.30 0.003 260)"
+    },
+    "templates": {
+        "page": {
+            "default": "Default",
+            "home": "Home",
+            "landing": "Landing: an opening, then sections",
+            "faq": "Questions and answers",
+            "roadmap": "Roadmap: three columns"
+        }
+    },
+    "navigations": {
+        "primary": "Header",
+        "footer-teme": "Footer: Teme",
+        "footer-build": "Footer: Build",
+        "footer-project": "Footer: Project",
+        "docs-editors": "Docs: the editors guide",
+        "docs-operators": "Docs: the operators guide",
+        "docs-developers": "Docs: for developers"
+    },
+    "regions": {
+        "home-latest": {
+            "label": "Home page: from the blog",
+            "cards": [
+                "featured-posts"
+            ],
+            "max": 1
+        },
+        "after-content": {
+            "label": "After the content of a page or post",
+            "cards": [
+                "callout",
+                "button",
+                "site-code",
+                "featured-posts"
+            ],
+            "max": 5
+        },
+        "blog-intro": {
+            "label": "Blog: opening text",
+            "cards": [
+                "callout",
+                "button",
+                "image"
+            ],
+            "max": 8
+        },
+        "docs-intro": {
+            "label": "Documentation: opening text",
+            "cards": [
+                "callout",
+                "button",
+                "image"
+            ],
+            "max": 8
+        },
+        "plugins-intro": {
+            "label": "Plugins: opening text",
+            "cards": [
+                "callout",
+                "button",
+                "image"
+            ],
+            "max": 8
+        },
+        "plugins-how": {
+            "label": "Plugins: how they work",
+            "cards": [
+                "callout",
+                "button",
+                "image"
+            ],
+            "max": 8
+        },
+        "themes-intro": {
+            "label": "Themes: opening text",
+            "cards": [
+                "callout",
+                "button",
+                "image"
+            ],
+            "max": 8
+        },
+        "themes-build": {
+            "label": "Themes: build a theme",
+            "cards": [
+                "callout",
+                "button",
+                "image"
+            ],
+            "max": 8
+        }
+    },
+    "settings": [
+        {
+            "key": "maker_line",
+            "type": "text",
+            "label": "Maker line",
+            "description": "One plain line in the footer saying who makes the software the site is about.",
+            "fieldset": "site",
+            "default": "Made by Krafty Sprouts Media."
+        },
+        {
+            "key": "follow_label",
+            "type": "text",
+            "label": "The follow link's words",
+            "description": "The words of the call to action in the header and on the pages that carry it.",
+            "fieldset": "site",
+            "default": "Follow the build"
+        },
+        {
+            "key": "follow_url",
+            "type": "text",
+            "label": "The follow link's address",
+            "description": "An https address. Anything else is left out and the link falls back to https://github.com/temecms.",
+            "fieldset": "site",
+            "default": "https://github.com/temecms"
+        },
+        {
+            "key": "status_line",
+            "type": "text",
+            "label": "Status line",
+            "description": "The line at the foot of every page about where the project stands, such as Alpha · Not public yet · 0.7.0-alpha.1.",
+            "fieldset": "site",
+            "default": "Alpha · Not public yet · 0.7.0-alpha.1"
+        },
+        {
+            "key": "licence_line",
+            "type": "text",
+            "label": "Licence line",
+            "description": "The short licence note at the foot of every page. Leave it empty to show none.",
+            "fieldset": "site",
+            "default": "MIT licence"
+        },
+        {
+            "key": "home_latest",
+            "type": "boolean",
+            "label": "Show the latest blog posts on the home page",
+            "description": "Draws the region Home page: from the blog, under the four stops. Fill it under Content › Regions.",
+            "fieldset": "latest",
+            "default": false
+        },
+        {
+            "key": "docs_version",
+            "type": "text",
+            "label": "Documentation version label",
+            "description": "The version the documentation pages say they describe, such as 0.7.",
+            "fieldset": "content",
+            "default": "0.7"
+        }
+    ],
+    "assets": {
+        "manifest": "public/build/manifest.json",
+        "entries": [
+            "assets/css/theme.css",
+            "assets/js/theme.js"
+        ]
+    },
+    "speculation": true
+}

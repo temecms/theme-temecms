@@ -1,0 +1,5 @@
+node_modules/
+public/hot
+.DS_Store
+tests/.output/
+seed/.state.json

@@ -1,0 +1,16 @@
+{
+  "editor": "The Teme editor, with an article open",
+  "posts": "The Posts list",
+  "media": "The media library",
+  "plugins": "Site, Plugins",
+  "updates": "Tools, Updates and the site's status",
+  "consent": "The dialog that asks an administrator to agree before a plugin is enabled",
+  "plugin-row": "The plugin in Site, Plugins, enabled",
+  "import": "Tools, Import: the report after an import",
+  "import-choose": "Tools, Import: choosing what comes across",
+  "site-card": "Teme Default: a front page with a lead story and a feed",
+  "site-desktop": "Teme Default's front page on a wide screen",
+  "site-phone": "Teme Default's front page on a phone",
+  "plugin-flow": "",
+  "surfaces": ""
+}
