@@ -10,9 +10,9 @@ The theme of [temecms.com](https://temecms.com), the TemeCMS project's own websi
 
 ## Requirements
 
-- TemeCMS `^0.9`
-- To rebuild the assets, seed the content or run the browser checks: Node.js 20.11 or later
-- For the browser checks: Google Chrome (the checks drive it through Playwright)
+- TemeCMS `^1.0`
+
+Working on the theme itself (assets, content, browser checks) needs more: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Install
 
@@ -37,16 +37,7 @@ php artisan teme:themes:link
 
 and activate it under Site › Themes.
 
-To work on a local copy instead, add the theme's folder, as an absolute path, to `TEME_THEME_PATHS` in the Teme install's `.env`.
-
-## Build the assets
-
-The built assets in `public/build` are committed, so an install needs no build step. After changing anything under `assets/`:
-
-```bash
-npm ci
-npm run build          # Vite writes public/build
-```
+To work on a local copy instead, add the theme's folder, as an absolute path, to `TEME_THEME_PATHS` in the Teme install's `.env`. The folder must be named `temecms`, the theme's code.
 
 ## What it draws
 
@@ -103,32 +94,36 @@ Under Site › Themes:
 | Maker line (footer) | Made by Krafty Sprouts Media. |
 | The follow link's words | Follow the build |
 | The follow link's address (https only) | https://github.com/temecms |
-| Status line (foot of every page) | Alpha · Not public yet · 0.7.0-alpha.1 |
+| Status line (foot of every page and the home page; empty shows none) | empty |
 | Licence line (empty shows none) | MIT licence |
 | Show the latest blog posts on the home page | off |
 | Documentation version label | 0.7 |
 
-## Put the site's content in
+## Load the site on a live install
 
-The `seed` folder holds the whole temecms.com site: pages, posts, guides, plugin and theme entries, product pictures, menus, regions and settings. The content is Tiptap JSON (never HTML), written in `seed/content/*.mjs` with the helpers in `seed/lib.mjs` and compiled to `seed/content.json`, which is committed. The seed makes everything through Teme's own Operations, never in SQL.
+The theme carries the whole temecms.com site in its `seed` folder: pages, posts, guides, plugin and theme entries, product pictures, menus, regions and settings. One command puts it into a Teme install. It makes everything through Teme's own Operations, as an administrator would from the admin, and needs nothing that isn't in Teme's production image.
 
-It needs:
+Before you start:
 
-- a Teme install with this theme installed (see above), and its database migrated;
-- an administrator in that install: `SEED_ADMIN_ID` is that user's ID (default `1`);
-- Teme's testing kit (the `Teme\Testing` classes) loadable in that install, since the seed acts through it as that administrator.
+- the theme is installed (see [Install](#install));
+- an administrator exists. If none does yet, make one with `php artisan teme:user:create --role=administrator --name="Your Name" --email=you@example.com` and open the link it prints. You need that administrator's user ID: the first user on a new site is `1`.
 
-After editing `seed/content/*.mjs`, compile the content again:
+Then, on Teme's Docker image (as with the recipe on Dokploy):
 
-```bash
-node seed/build-content.mjs        # seed/content/*.mjs -> seed/content.json
-```
+1. Open a terminal in the **web** container (in Dokploy: the `web` service's Docker terminal; or `docker compose exec web sh` next to the compose file). The image's `php` runs as the site's own user, so the pictures the seed uploads stay writable by the site.
+2. Go to Teme's folder:
 
-Then, from the Teme install's folder:
+   ```bash
+   cd /var/www/html
+   ```
 
-```bash
-SEED_ADMIN_ID=1 php /path/to/theme-temecms/seed/seed.php types fields media theme content regions menus settings addresses activate
-```
+3. Run the seed. A theme installed from the admin lives in the extensions folder, under `current/vendor/temecms/theme-temecms` (installed another way, use the theme's own folder). Set `SEED_ADMIN_ID` to your administrator's ID:
+
+   ```bash
+   SEED_ADMIN_ID=1 php /var/teme/extensions/current/vendor/temecms/theme-temecms/seed/seed.php types fields media theme content regions menus settings addresses activate
+   ```
+
+The steps run in this order, whatever order you name them in:
 
 | Step | Does |
 |---|---|
@@ -143,25 +138,15 @@ SEED_ADMIN_ID=1 php /path/to/theme-temecms/seed/seed.php types fields media them
 | `addresses` | Moves the theme directory to `/theme-directory/{slug}/` (core serves theme assets from `/themes/`) |
 | `activate` | Makes the home page the front page and the blog page the posts page |
 
-`theme`, `settings` and `activate` change the site's theme, title and front page, so run them only on a site meant for this content. Steps are repeatable: what exists already, by slug or by `seed/.state.json`, is reused, never duplicated. Published items are left alone unless their type is named in `SEED_FORCE`, as in `SEED_FORCE=page,doc`.
+`theme`, `settings`, `addresses` and `activate` change the site's theme, title, addresses and front page, so run them only on a site meant for this content. Leave a step out to skip it.
 
-## Tests
+It is safe to run again. What the seed made before is found and reused, never duplicated, and a second run changes nothing: it ends with "Nothing to change". It remembers what it made in `storage/app/theme-temecms-seed.json` (set `SEED_STATE` to keep that file elsewhere); without that file it finds its pictures and items by name. Published items are left as they are, even if you have edited them since; to write the seed's version over a type's items again, name the type in `SEED_FORCE`, as in `SEED_FORCE=page,doc` (`region` for the regions).
 
-The theme's tests use Teme's testing kit. From the Teme install's folder:
+If Teme refuses a step, the seed prints the step and the reason, such as `Refused: Publishing Hosting. …`, stops, and exits with a non-zero status. Fix the cause and run the same command again: it carries on where it stopped.
 
-```bash
-php artisan test /path/to/theme-temecms/tests
-```
+## Working on the theme
 
-They check what the theme alone decides: which template answers each address, the one `h1`, the footer's words and the follow link from the theme's settings.
-
-Browser checks of the seeded site, at 1280 and 375 wide: status 200, one `h1`, heading order, alt text and image sizes, no sideways scroll, and no axe violation. Point `BASE` at the site; it defaults to `http://localhost:8000`:
-
-```bash
-npm ci
-BASE=http://localhost:8000 node tests/pages.mjs          # report in tests/.output/report.json
-BASE=http://localhost:8000 node tests/screenshots.mjs    # full-page shots into docs/screenshots
-```
+Building the assets, changing the seed's content, the tests and the browser checks are in [CONTRIBUTING.md](CONTRIBUTING.md). What changed in each version is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Licence
 
