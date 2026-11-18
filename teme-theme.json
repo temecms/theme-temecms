@@ -2,7 +2,7 @@
     "manifest": 1,
     "code": "temecms",
     "name": "TemeCMS",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "The theme of temecms.com, Teme's own public site: a product home page, documentation, plugin and theme directories, and a blog, in neutral grounds with the Ember accent.",
     "author": "TemeCMS",
     "author_url": "https://github.com/temecms",
@@ -216,9 +216,9 @@
             "key": "status_line",
             "type": "text",
             "label": "Status line",
-            "description": "The line at the foot of every page about where the project stands, such as Alpha · Not public yet · 0.7.0-alpha.1.",
+            "description": "A line at the foot of every page about where the project stands, such as Beta · 1.2.0. Leave it empty to show none.",
             "fieldset": "site",
-            "default": "Alpha · Not public yet · 0.7.0-alpha.1"
+            "default": ""
         },
         {
             "key": "licence_line",
