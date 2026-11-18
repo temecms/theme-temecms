@@ -4,15 +4,13 @@ The theme of [temecms.com](https://temecms.com), the TemeCMS project's own websi
 
 - Package: `temecms/theme-temecms`
 - Theme code: `temecms`
-- Licence: MIT
+- License: MIT
 
 ![The home page at 1280 wide](docs/screenshots/home-1280.png)
 
 ## Requirements
 
-- TemeCMS `^0.9`
-- To rebuild the assets, seed the content or run the browser checks: Node.js 20.11 or later
-- For the browser checks: Google Chrome (the checks drive it through Playwright)
+- Teme 1.x
 
 ## Install
 
@@ -36,17 +34,6 @@ php artisan teme:themes:link
 ```
 
 and activate it under Site › Themes.
-
-To work on a local copy instead, add the theme's folder, as an absolute path, to `TEME_THEME_PATHS` in the Teme install's `.env`.
-
-## Build the assets
-
-The built assets in `public/build` are committed, so an install needs no build step. After changing anything under `assets/`:
-
-```bash
-npm ci
-npm run build          # Vite writes public/build
-```
 
 ## What it draws
 
@@ -103,66 +90,35 @@ Under Site › Themes:
 | Maker line (footer) | Made by Krafty Sprouts Media. |
 | The follow link's words | Follow the build |
 | The follow link's address (https only) | https://github.com/temecms |
-| Status line (foot of every page) | Alpha · Not public yet · 0.7.0-alpha.1 |
+| Status line (foot of every page; empty shows none) | empty |
 | Licence line (empty shows none) | MIT licence |
 | Show the latest blog posts on the home page | off |
 | Documentation version label | 0.7 |
 
-## Put the site's content in
+## Load the site on a live install
 
-The `seed` folder holds the whole temecms.com site: pages, posts, guides, plugin and theme entries, product pictures, menus, regions and settings. The content is Tiptap JSON (never HTML), written in `seed/content/*.mjs` with the helpers in `seed/lib.mjs` and compiled to `seed/content.json`, which is committed. The seed makes everything through Teme's own Operations, never in SQL.
+The theme carries the whole temecms.com site: its pages, blog posts, documentation, plugin and theme directories, product pictures, menus and regions. One command puts all of it on a Teme site that runs from Teme's image.
 
-It needs:
+Before you start:
 
-- a Teme install with this theme installed (see above), and its database migrated;
-- an administrator in that install: `SEED_ADMIN_ID` is that user's ID (default `1`);
-- Teme's testing kit (the `Teme\Testing` classes) loadable in that install, since the seed acts through it as that administrator.
+- install the theme (see above);
+- make sure the site has an administrator. The first administrator, the one made when the site was set up, has the ID `1`. To make the content as another administrator, use that user's ID in place of `1` below.
 
-After editing `seed/content/*.mjs`, compile the content again:
-
-```bash
-node seed/build-content.mjs        # seed/content/*.mjs -> seed/content.json
-```
-
-Then, from the Teme install's folder:
+Then open a terminal in the site's web container (in Docker Compose, `docker compose exec web sh`; on a hosting panel, the web service's terminal) and run:
 
 ```bash
-SEED_ADMIN_ID=1 php /path/to/theme-temecms/seed/seed.php types fields media theme content regions menus settings addresses activate
+cd /var/www/html
+SEED_ADMIN_ID=1 php /var/teme/extensions/current/vendor/temecms/theme-temecms/seed/seed.php
 ```
 
-| Step | Does |
-|---|---|
-| `types` | Adds the content types Guide (`/docs/{slug}/`), Plugin (`/plugins/{slug}/`) and Theme |
-| `fields` | Adds their fields, and the page fields kicker and emphasis |
-| `media` | Uploads the product pictures in `seed/media` with their alt text |
-| `theme` | Makes `temecms` the site's theme (before `content`: a page picks its template from the active theme) |
-| `content` | Makes and publishes every page, post, guide, plugin and theme entry, with links between them stored as IDs |
-| `regions` | Fills the theme's regions |
-| `menus` | Makes the menus and puts them in the theme's slots |
-| `settings` | Sets the site's title and tagline |
-| `addresses` | Moves the theme directory to `/theme-directory/{slug}/` (core serves theme assets from `/themes/`) |
-| `activate` | Makes the home page the front page and the blog page the posts page |
+It prints a line for each thing it makes. When it finishes, the site uses this theme, its home page is the product home page, the blog page lists the posts, and the menus are in place. It also sets the site's title and tagline.
 
-`theme`, `settings` and `activate` change the site's theme, title and front page, so run them only on a site meant for this content. Steps are repeatable: what exists already, by slug or by `seed/.state.json`, is reused, never duplicated. Published items are left alone unless their type is named in `SEED_FORCE`, as in `SEED_FORCE=page,doc`.
+This changes the site's theme, title, tagline and home page, so run it only on a site meant to be temecms.com.
 
-## Tests
+It is safe to run again: anything already made is left as it is, and a second run changes nothing. It remembers what it made in `storage/app/theme-temecms-seed.json`; leave that file in place.
 
-The theme's tests use Teme's testing kit. From the Teme install's folder:
+If a step is refused, it says which step and why, and stops without going further. The usual reason is that the user named in `SEED_ADMIN_ID` isn't an administrator.
 
-```bash
-php artisan test /path/to/theme-temecms/tests
-```
-
-They check what the theme alone decides: which template answers each address, the one `h1`, the footer's words and the follow link from the theme's settings.
-
-Browser checks of the seeded site, at 1280 and 375 wide: status 200, one `h1`, heading order, alt text and image sizes, no sideways scroll, and no axe violation. Point `BASE` at the site; it defaults to `http://localhost:8000`:
-
-```bash
-npm ci
-BASE=http://localhost:8000 node tests/pages.mjs          # report in tests/.output/report.json
-BASE=http://localhost:8000 node tests/screenshots.mjs    # full-page shots into docs/screenshots
-```
-
-## Licence
+## License
 
 MIT, copyright Krafty Sprouts Media, LLC. See [LICENSE](LICENSE). The IBM Plex fonts in `public/fonts` are under the SIL Open Font License; see `public/fonts/OFL-ibm-plex.txt`.
