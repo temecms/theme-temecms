@@ -1,4 +1,4 @@
-{{-- The footer: who the site is and its maker in one plain line, three menus, then the status and licence lines. No person's name, no address, no form. --}}
+{{-- The footer: who the site is and its maker in one plain line, three menus, then the status and licence lines, each left out when it's empty. No person's name, no address, no form. --}}
 <footer class="site-foot">
     <div class="wrap">
         <div class="foot-grid">
@@ -13,7 +13,7 @@
             <div><h2>{{ __('Project') }}</h2><x-teme::navigation slot="footer-project" :label="__('Project')" /></div>
         </div>
         <div class="foot-base">
-            <span>{{ $themeSettings['status_line'] ?? '' }}</span>
+            @if (($themeSettings['status_line'] ?? '') !== '')<span>{{ $themeSettings['status_line'] }}</span>@endif
             @if (($themeSettings['licence_line'] ?? '') !== '')<span>{{ $themeSettings['licence_line'] }}</span>@endif
         </div>
     </div>

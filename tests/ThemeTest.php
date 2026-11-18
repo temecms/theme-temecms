@@ -86,6 +86,13 @@ it('says who makes the site in one plain line, and names no person, address or f
         ->and($html)->not->toMatch('/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/');
 });
 
+it('leaves the status line out while it is empty, as it is by default', function (): void {
+    $html = $this->fetch('/')->getContent();
+
+    expect($html)->not->toMatch('/<div class="foot-base">\s*<span><\/span>/')
+        ->and($html)->toMatch('/<div class="foot-base">\s*<span>MIT licence<\/span>/');
+});
+
 it('draws the follow link from its setting, and only to an https address', function (): void {
     $html = $this->fetch('/')->getContent();
 

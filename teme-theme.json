@@ -216,9 +216,9 @@
             "key": "status_line",
             "type": "text",
             "label": "Status line",
-            "description": "The line at the foot of every page about where the project stands, such as Alpha · Not public yet · 0.7.0-alpha.1.",
+            "description": "The line at the foot of every page about where the project stands, such as Alpha · Not public yet · 0.7.0-alpha.1. Leave it empty to show none.",
             "fieldset": "site",
-            "default": "Alpha · Not public yet · 0.7.0-alpha.1"
+            "default": ""
         },
         {
             "key": "licence_line",

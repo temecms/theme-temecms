@@ -149,7 +149,7 @@
         @if ($variant === 'faq')
             <div class="faq-tools" hidden><button class="btn btn-quiet" type="button" data-faq="open">{{ __('Open all') }}</button><button class="btn btn-quiet" type="button" data-faq="close">{{ __('Close all') }}</button></div>
         @endif
-        @if ($variant === 'home')
+        @if ($variant === 'home' && trim((string) ($themeSettings['status_line'] ?? '')) !== '')
             <p class="status-line"><b>{{ strtok((string) ($themeSettings['status_line'] ?? ''), '·') }}</b>@foreach (array_slice(array_map('trim', explode('·', (string) ($themeSettings['status_line'] ?? ''))), 1) as $bit)<span>{{ $bit }}</span>@if (! $loop->last)<span class="dot" aria-hidden="true"></span>@endif @endforeach</p>
         @endif
     </div>
