@@ -21,6 +21,7 @@ Closer to the drawings, everywhere:
 - A theme's README pictures: the wide picture stays in the column and the phone picture sits at a phone's size over its lower corner.
 - Product pictures on a phone show a version drawn for a phone, and no picture runs past the screen's edge.
 - Product pictures are dark in dark mode.
+- The footer as drawn: a new setting, The footer's line (words between asterisks in italics), the status line on the left and the licence on the right.
 
 What a site owner does: update the temecms-site plugin to 1.1.0 and run its directory sync, update this theme, make a page with the template Submit a plugin or theme at `/submit/`, and fill the menu `docs-popular` and the region `docs-whats-new` if you want those sections.
 

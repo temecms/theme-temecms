@@ -82,7 +82,7 @@ it('answers an address with nothing at it as not found, with one h1', function (
 it('says who makes the site in one plain line, and names no person, address or form', function (): void {
     $html = $this->fetch('/')->getContent();
 
-    expect($html)->toContain('Made by Krafty Sprouts Media.')
+    expect($html)->toContain('A content management system for publications, made by Krafty Sprouts Media. Teme is Ijaw for <em>create</em>.')
         ->and($html)->not->toContain('mailto:')
         ->and($html)->not->toMatch('/<form[^>]*method="post"/i')
         ->and($html)->not->toMatch('/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/');
@@ -91,8 +91,8 @@ it('says who makes the site in one plain line, and names no person, address or f
 it('leaves the status line out while it is empty, as it is by default', function (): void {
     $html = $this->fetch('/')->getContent();
 
-    expect($html)->not->toMatch('/<div class="foot-base">\s*<span><\/span>/')
-        ->and($html)->toMatch('/<div class="foot-base">\s*<span>MIT licence<\/span>/');
+    expect($html)->not->toContain('class="foot-status"')
+        ->and($html)->toMatch('/<div class="foot-base">\s*<span class="foot-licence">MIT licence<\/span>/');
 });
 
 it('draws the follow link from its setting, and only to an https address', function (): void {
@@ -139,4 +139,23 @@ it('shows no version label when the setting is empty and Teme gives no release',
     $html = docsVersion(['themeSettings' => ['docs_version' => '']]);
 
     expect($html)->not->toContain('class="ver"');
+});
+
+/** One of the footer's partials, drawn from these values alone. */
+function footPart(string $name, array $data): string
+{
+    return Blade::render((string) file_get_contents(dirname(__DIR__).'/views/partials/'.$name.'.blade.php'), $data);
+}
+
+it('draws the status line at the foot\'s start and the licence at its end, as the drawing does', function (): void {
+    expect(footPart('foot-base', ['status' => 'Stable · Teme 1.2', 'licence' => 'MIT licence']))
+        ->toMatch('/<div class="foot-base">\s*<span class="foot-status">Stable · Teme 1.2<\/span>\s*<span class="foot-licence">MIT licence<\/span>/');
+});
+
+it('sets the footer\'s words between asterisks in italics, and draws the tagline and maker line when its line is empty', function (): void {
+    $words = fn (string $line) => footPart('foot-words', ['line' => $line, 'tagline' => 'A content management system for publications.', 'maker' => 'Made by Krafty Sprouts Media.']);
+
+    expect($words('Made by us. Teme is Ijaw for *create*.'))->toContain('<p>Made by us. Teme is Ijaw for <em>create</em>.</p>')
+        ->and($words(''))->toContain('<p>A content management system for publications. Made by Krafty Sprouts Media.</p>')
+        ->and($words('<b>*x*</b>'))->toContain('&lt;b&gt;<em>x</em>&lt;/b&gt;');
 });

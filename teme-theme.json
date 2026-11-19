@@ -209,6 +209,14 @@
             "default": "Made by Krafty Sprouts Media."
         },
         {
+            "key": "footer_line",
+            "type": "text",
+            "label": "The footer's line",
+            "description": "What the site is and who makes it, in one line under the footer's icon. Words between asterisks are set in italics, as in Teme is Ijaw for *create*. Leave it empty to show the site's tagline and the maker line instead.",
+            "fieldset": "site",
+            "default": "A content management system for publications, made by Krafty Sprouts Media. Teme is Ijaw for *create*."
+        },
+        {
             "key": "follow_label",
             "type": "text",
             "label": "The follow link's words",
