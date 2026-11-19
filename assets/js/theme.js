@@ -77,10 +77,22 @@ if (faq) {
     $$('[data-faq]', faq).forEach((b) => b.addEventListener('click', () => $$('.faq details').forEach((d) => { d.open = b.dataset.faq === 'open'; })));
 }
 
-// Copy on a code block.
+// Copy on a code block: a bar over the code holds the file's name (or the language) and Copy, so Copy never covers a line.
 $$('.card-snippet').forEach((figure) => {
     const pre = $('pre', figure);
-    if (!pre || !navigator.clipboard || $('.codeblock', figure)) return; // the docs' code frame has its own Copy
+    if (!pre || $('.codeblock', figure) || $('.snip-bar', figure)) return; // the docs' code frame has its own bar
+    const bar = document.createElement('div');
+    bar.className = 'snip-bar';
+    const name = document.createElement('span');
+    name.className = 'snip-name';
+    name.setAttribute('aria-hidden', 'true');
+    const caption = $('figcaption', figure);
+    const lang = (($('code', pre)?.className || '').match(/language-([\w+.-]+)/) || [])[1] || '';
+    name.textContent = caption ? caption.textContent.trim() : lang;
+    if (caption) figure.classList.add('named');
+    bar.append(name);
+    pre.before(bar);
+    if (!navigator.clipboard) return;
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'copy-btn';
@@ -90,7 +102,7 @@ $$('.card-snippet').forEach((figure) => {
         try { await navigator.clipboard.writeText(pre.innerText.replace(/\n$/, '')); btn.textContent = 'Copied'; } catch { btn.textContent = 'Not copied'; }
         setTimeout(() => { btn.textContent = 'Copy'; }, 1800);
     });
-    figure.append(btn);
+    bar.append(btn);
 });
 
 // ---------------------------------------------------------------------------------------------------------------

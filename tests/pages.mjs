@@ -39,6 +39,8 @@ for (const [name, url] of Object.entries(PAGES)) {
                 offCentre: [...document.querySelectorAll('.closing h2')].filter((h) => { const r = h.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - document.documentElement.clientWidth / 2) > 2; }).length,
                 // no picture starts off the screen's left edge
                 offLeft: [...document.querySelectorAll('main figure img')].filter((i) => i.getBoundingClientRect().left < -1).length,
+                // Copy never sits over code
+                copyOverCode: [...document.querySelectorAll('.copy-btn')].filter((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && [...document.querySelectorAll('pre')].some((p) => { const q = p.getBoundingClientRect(); return r.left < q.right && r.right > q.left && r.top < q.bottom && r.bottom > q.top; }); }).length,
             };
         });
         const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']).analyze();
@@ -53,6 +55,7 @@ for (const [name, url] of Object.entries(PAGES)) {
         if (facts.footShort) problems.push('a band under the footer');
         if (facts.offCentre) problems.push(`${facts.offCentre} centred heading(s) off centre`);
         if (facts.offLeft) problems.push(`${facts.offLeft} picture(s) off the left edge`);
+        if (facts.copyOverCode) problems.push(`${facts.copyOverCode} Copy button(s) over code`);
         for (const v of axe.violations) problems.push(`axe ${v.id} (${v.impact}): ${v.nodes.length} node(s), e.g. ${v.nodes[0]?.target?.join(' ')}`);
         if (problems.length) failures += 1;
         results.push({ page: name, width: w, scheme, status: res?.status(), problems });

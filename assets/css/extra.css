@@ -153,10 +153,14 @@
     @media (min-width: 961px) { .docs-tree > .tree-details > summary { display: none; } }
     .otp a[aria-current="location"] { color: var(--teme-ink); font-weight: 500; }
 
-    /* Copy on a code block (added by the script) */
-    .card-snippet { position: relative; }
-    .copy-btn { position: absolute; inset-block-start: 8px; inset-inline-end: 8px; min-height: 32px; padding: 0 12px; border: 0; border-radius: var(--radius-sm); background: var(--teme-surface-3); color: var(--teme-ink-2); font: 500 var(--text-small)/1 var(--teme-font-sans); cursor: pointer; }
-    .copy-btn:hover { background: var(--teme-surface-4); color: var(--teme-ink); }
+    /* Copy on a code block (added by the script), in a bar over the code with the file's name; the code scrolls sideways inside the block */
+    .card-snippet { min-width: 0; max-width: 100%; }
+    .card-snippet pre { max-width: 100%; white-space: pre; }
+    .snip-bar { display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 4px 6px 4px 14px; box-shadow: 0 1px 0 var(--teme-line); font: 500 var(--text-caption)/1.3 var(--teme-font-mono); color: var(--teme-ink-3); }
+    .snip-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .snip-bar .copy-btn { margin-inline-start: auto; flex: none; min-height: 30px; padding: 0 12px; border: 0; border-radius: var(--radius-sm); background: var(--teme-surface); box-shadow: inset 0 0 0 1px var(--teme-line); color: var(--teme-ink-2); font: 500 var(--text-small)/1 var(--teme-font-sans); cursor: pointer; }
+    .snip-bar .copy-btn:hover { background: var(--teme-surface-3); color: var(--teme-ink); }
+    .card-snippet.named > figcaption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
     /* a paragraph that is only a bold link is a quiet button wherever it stands outside a section's own button row */
     main p:has(> strong:only-child > a:only-child) { display: inline-block; margin: 12px 12px 0 0; }
@@ -176,6 +180,7 @@
 
 @layer teme.theme {
     picture { display: block; }
+    .code-side .card-snippet { margin: 0; }
     /* a theme's README pictures: the wide one in the column, the phone one at a phone's size over its lower corner */
     .shot-duo { position: relative; margin-block: 2rem; padding-inline-end: 9%; padding-block-end: 9%; }
     .shot-duo > .card-image { margin: 0 !important; }
