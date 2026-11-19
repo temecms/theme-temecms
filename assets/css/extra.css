@@ -97,6 +97,7 @@
     .heroshot { margin-top: clamp(32px, 5vw, 56px); }
     .facts-strip dd > * { display: inline; margin: 0; }
     .section.closing .cta-row { margin-top: 28px; }
+    .closing .sec-head, .page-hero.center .sec-head { margin-inline: auto; }
     .link-row a { text-decoration: none; }
     .faq-tools[hidden] { display: none; }
     .after-faq { margin-top: 32px; }

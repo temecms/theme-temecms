@@ -35,6 +35,8 @@ for (const [name, url] of Object.entries(PAGES)) {
                 lang: document.documentElement.lang,
                 // the footer reaches the window's foot on a short page
                 footShort: (() => { const f = document.querySelector('.site-foot'); return f ? f.getBoundingClientRect().bottom + window.scrollY < window.innerHeight - 1 : false; })(),
+                // a centred section's heading sits on the page's centre
+                offCentre: [...document.querySelectorAll('.closing h2')].filter((h) => { const r = h.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - document.documentElement.clientWidth / 2) > 2; }).length,
             };
         });
         const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']).analyze();
@@ -47,6 +49,7 @@ for (const [name, url] of Object.entries(PAGES)) {
         if (facts.imgsWithoutSize) problems.push(`${facts.imgsWithoutSize} img without width/height`);
         if (facts.sideways) problems.push('scrolls sideways');
         if (facts.footShort) problems.push('a band under the footer');
+        if (facts.offCentre) problems.push(`${facts.offCentre} centred heading(s) off centre`);
         for (const v of axe.violations) problems.push(`axe ${v.id} (${v.impact}): ${v.nodes.length} node(s), e.g. ${v.nodes[0]?.target?.join(' ')}`);
         if (problems.length) failures += 1;
         results.push({ page: name, width: w, scheme, status: res?.status(), problems });

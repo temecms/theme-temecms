@@ -17,6 +17,7 @@ The free plugin and theme directory, as drawn: the theme draws the fields the te
 Closer to the drawings, everywhere:
 
 - The footer reaches the window's foot on a short page, with no band under it.
+- A centred section's heading sits on the page's centre.
 
 What a site owner does: update the temecms-site plugin to 1.1.0 and run its directory sync, update this theme, make a page with the template Submit a plugin or theme at `/submit/`, and fill the menu `docs-popular` and the region `docs-whats-new` if you want those sections.
 
