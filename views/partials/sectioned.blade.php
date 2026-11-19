@@ -141,6 +141,9 @@
                             <div><dt>{{ $factLabel }}</dt><dd>{!! trim($inner($holder)) !!}</dd></div>
                         @endforeach
                     </dl>
+                @elseif ($variant === 'landing' && $tag($node) === 'p' && $node->getElementsByTagName('*')->length === 0 && count(explode(' · ', $node->textContent)) >= 3)
+                    {{-- a line of short facts split by middots, such as the stack a page is built on, drawn as chips --}}
+                    <p class="chips">@foreach (explode(' · ', trim($node->textContent)) as $chip)<span class="tag">{{ trim($chip) }}</span>@endforeach</p>
                 @elseif ($cls($node) !== '' && str_contains($cls($node), 'card-callout'))
                     <div class="banner" role="note">{!! $inner($node) !!}</div>
                 @else
@@ -268,78 +271,278 @@
             @if ($index > 0)</div></section>@endif
         @endif
     @else
-        {{-- landing --}}
+        {{-- landing: the sections as the drawings lay them out, from what each one holds --}}
         @php
+            if (! isset($landing)) {
+                $landing = ['skip' => [], 'toneN' => 0];
+                // A section is "plain" when it is a heading with words and at most a button; "cards only" when it is cards under no heading.
+                $sectionKind = function (array $ns) use ($tag, $isKicker, $isButton, $isCta): string {
+                    if ($ns !== [] && $isKicker($ns[0])) {
+                        array_shift($ns);
+                    }
+                    $tags = array_map($tag, $ns);
+                    if (in_array('h2', $tags, true) && ! array_intersect($tags, ['h3', 'ul', 'ol', 'figure', 'div', 'table'])) {
+                        return 'plain';
+                    }
+                    if (! in_array('h2', $tags, true) && ($tags[0] ?? '') === 'h3' && ! array_intersect($tags, ['ul', 'ol', 'figure', 'div', 'table'])
+                        && ! collect($ns)->contains(fn ($n) => $isButton($n) || $isCta($n))) {
+                        return 'cards';
+                    }
+
+                    return 'other';
+                };
+                $boldList = static function ($n) use ($tag): bool {
+                    if ($tag($n) !== 'ul') {
+                        return false;
+                    }
+                    $items = iterator_to_array($n->childNodes);
+                    $items = array_values(array_filter($items, fn ($li) => $li instanceof DOMElement && $li->tagName === 'li'));
+                    foreach ($items as $li) {
+                        $holder = $li->getElementsByTagName('p')->item(0) ?? $li;
+                        $first = $holder->firstChild;
+                        if (! ($first instanceof DOMElement && $first->tagName === 'strong')) {
+                            return false;
+                        }
+                    }
+
+                    return $items !== [];
+                };
+                // A list item, or a numbered step, as its bold label and the words after it.
+                $labelled = static function ($li) use ($dom): array {
+                    $holder = $li->getElementsByTagName('p')->item(0) ?? $li;
+                    $label = '';
+                    $rest = '';
+                    foreach (iterator_to_array($holder->childNodes) as $k) {
+                        if ($label === '' && $k instanceof DOMElement && $k->tagName === 'strong') {
+                            $label = trim($k->textContent);
+                        } else {
+                            $rest .= $dom->saveHTML($k);
+                        }
+                    }
+
+                    return [$label, trim($rest)];
+                };
+                $isChip = static fn ($n): bool => $n instanceof DOMElement && $n->tagName === 'p' && $n->childNodes->length === 1 && $n->firstChild instanceof DOMElement && in_array($n->firstChild->tagName, ['em', 'i'], true);
+                $glyph = static fn (string $d): string => '<span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" focusable="false">'.$d.'</svg></span>';
+                // The drawings' icons, found by a word in a card's title; a title with none of these words gets no icon.
+                $iconFor = static function (string $title) use ($glyph): string {
+                    $icons = [
+                        'dokploy' => '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
+                        'package' => '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
+                        'coolify' => '<path d="M7 18a5 5 0 0 1-.6-10A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9Z"/>',
+                        'vps' => '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+                        'api' => '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+                        'hook' => '<path d="M6 9a6 6 0 0 1 12 0c0 6 3 8 3 8H3s3-2 3-8"/><path d="M10 21h4"/>',
+                        'row' => '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+                        'structured' => '<path d="M8 4H7a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-1"/>',
+                        'address' => '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+                        'path' => '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/><path d="m9 12 2 2 4-4"/>',
+                        'read-only' => '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+                    ];
+                    $words = strtolower($title);
+                    foreach ($icons as $word => $d) {
+                        if (preg_match('/\b'.preg_quote($word, '/').'s?\b/', $words)) {
+                            return $glyph($d);
+                        }
+                    }
+
+                    return '';
+                };
+                $check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>';
+                // The ten places a plugin appears, drawn small as the drawing does; a label it doesn't know gets an empty frame.
+                $surfaceDrawings = [
+                    'list cell' => '<i style="left:10px;right:10px;top:14px;height:8px"></i><i style="left:10px;right:40px;top:32px;height:8px"></i><i class="a" style="right:10px;top:30px;width:22px;height:12px;border-radius:6px"></i><i style="left:10px;right:10px;top:52px;height:8px"></i>',
+                    'row action' => '<i style="left:10px;right:10px;top:14px;height:8px"></i><i class="w" style="right:10px;top:26px;width:70px;height:40px"></i><i class="s" style="right:16px;top:36px;width:54px;height:6px"></i><i style="right:16px;top:50px;width:40px;height:6px"></i>',
+                    'rail section' => '<i style="left:10px;width:58%;top:12px;bottom:12px;background:var(--teme-surface)"></i><i class="s" style="right:10px;width:28%;top:14px;height:10px"></i><i style="right:10px;width:28%;top:30px;height:6px"></i><i style="right:10px;width:28%;top:42px;height:6px"></i>',
+                    'pane' => '<i style="left:10px;width:58%;top:12px;bottom:12px;background:var(--teme-surface)"></i><i class="a" style="right:10px;width:28%;top:12px;bottom:12px;opacity:.85"></i>',
+                    'dialog' => '<i style="inset:0;background:var(--teme-scrim);border-radius:0"></i><i class="w" style="left:25%;right:25%;top:14px;bottom:14px"></i><i class="a" style="right:30%;bottom:20px;width:24px;height:8px"></i>',
+                    'workspace' => '<i class="w" style="inset:8px"></i><i class="s" style="left:16px;right:16px;top:16px;height:8px"></i><i style="left:16px;width:40%;top:32px;bottom:16px"></i><i style="right:16px;width:40%;top:32px;bottom:16px"></i>',
+                    'page' => '<i style="left:8px;width:18%;top:8px;bottom:8px"></i><i class="s" style="left:30%;right:10px;top:14px;height:8px"></i><i style="left:30%;right:10px;top:30px;height:6px"></i><i style="left:30%;right:30%;top:42px;height:6px"></i>',
+                    'dashboard panel' => '<i class="w" style="left:10px;width:42%;top:12px;bottom:12px"></i><i class="w" style="right:10px;width:42%;top:12px;bottom:12px"></i><i class="a" style="left:18px;width:30px;top:24px;height:14px"></i>',
+                    'status row' => '<i class="w" style="right:10px;top:10px;width:66%;height:54px"></i><i style="right:18px;top:20px;width:8px;height:8px;border-radius:50%;background:var(--teme-ok)"></i><i style="right:34px;top:21px;width:46%;height:6px"></i><i style="right:18px;top:38px;width:8px;height:8px;border-radius:50%;background:var(--teme-warn)"></i><i style="right:34px;top:39px;width:40%;height:6px"></i>',
+                    'command' => '<i class="w" style="left:14%;right:14%;top:10px;height:20px"></i><i class="s" style="left:14%;right:14%;top:36px;height:10px"></i><i style="left:14%;right:30%;top:50px;height:6px"></i>',
+                ];
+                // A list as its items' bold labels and words: step cards, the ten places with their small drawings, or a two-column table.
+                $drawList = function ($list, string $element, string $class) use ($labelled, $surfaceDrawings): string {
+                    $out = '<'.$element.' class="'.$class.'">';
+                    foreach ($list->childNodes as $li) {
+                        if (! ($li instanceof DOMElement && $li->tagName === 'li')) {
+                            continue;
+                        }
+                        [$label, $words] = $labelled($li);
+                        $drawing = $class === 'surfaces' ? '<div class="sf" aria-hidden="true">'.($surfaceDrawings[strtolower($label)] ?? '').'</div>' : '';
+                        $out .= '<li'.($class === 'surfaces' ? ' class="surf"' : '').'>'.$drawing.'<b>'.e($label).'</b><span>'.$words.'</span></li>';
+                    }
+
+                    return $out.'</'.$element.'>';
+                };
+                // A card: its icon, its title (with a one-word chip such as Soon beside it), its words, then its other chips and its link at the foot.
+                $drawCard = function (array $c, int $level, string $class = 'card') use ($inner, $html, $isChip, $isCta, $isButton, $iconFor): string {
+                    $title = trim($c['h']->textContent);
+                    $beside = '';
+                    $foot = '';
+                    $words = '';
+                    foreach ($c['body'] as $bn) {
+                        if ($isChip($bn)) {
+                            $chip = trim($bn->textContent);
+                            if (! str_contains($chip, ' ')) {
+                                $beside .= ' <span class="tag">'.e($chip).'</span>';
+                            } else {
+                                $foot .= '<span class="tag'.(preg_match('/^(not|no)\b/i', $chip) ? '' : ' ok').'">'.e($chip).'</span>';
+                            }
+                        } elseif ($isCta($bn) || $isButton($bn)) {
+                            $a = $isButton($bn) ? $bn : $bn->getElementsByTagName('a')->item(0);
+                            $foot .= '<a class="go" href="'.e($a->getAttribute('href')).'">'.e(trim($a->textContent)).'</a>';
+                        } else {
+                            $words .= $html($bn);
+                        }
+                    }
+
+                    return '<div class="'.$class.'">'.$iconFor($title).'<h'.$level.'>'.$inner($c['h']).$beside.'</h'.$level.'>'.$words.($foot !== '' ? '<span class="foot">'.$foot.'</span>' : '').'</div>';
+                };
+                $gather = function (array $ns) use ($tag, $isFigure): array {
+                    $cards = [];
+                    $card = null;
+                    $out = [];
+                    foreach ($ns as $n) {
+                        if ($tag($n) === 'h3') {
+                            $cards[] = ['h' => $n, 'body' => []];
+                            $card = array_key_last($cards);
+                        } elseif ($card !== null && ! $isFigure($n) && ! in_array($tag($n), ['ol', 'ul', 'h2'], true)) {
+                            $cards[$card]['body'][] = $n;
+                        } else {
+                            $card = null;
+                            $out[] = $n;
+                        }
+                    }
+
+                    return [$cards, $out];
+                };
+                // Cards drawn by how many there are: rows in one card for five, small checked tiles for six or more, else a grid.
+                $drawCards = function (array $cards, int $level) use ($drawCard, $inner, $html, $iconFor, $check, $isChip): string {
+                    $count = count($cards);
+                    if ($count >= 6) {
+                        $out = '<div class="across-grid">';
+                        foreach ($cards as $c) {
+                            $out .= '<div><h'.$level.' class="across-h">'.$check.$inner($c['h']).'</h'.$level.'>';
+                            foreach ($c['body'] as $bn) {
+                                $out .= '<span>'.$inner($bn).'</span>';
+                            }
+                            $out .= '</div>';
+                        }
+
+                        return $out.'</div>';
+                    }
+                    if ($count === 5) {
+                        $out = '<div class="hood">';
+                        foreach ($cards as $c) {
+                            $out .= '<div class="hood-row">'.$iconFor(trim($c['h']->textContent)).'<h'.$level.'>'.$inner($c['h']).'</h'.$level.'>';
+                            foreach ($c['body'] as $bn) {
+                                $out .= $html($bn);
+                            }
+                            $out .= '</div>';
+                        }
+
+                        return $out.'</div>';
+                    }
+                    $out = '<div class="grid-'.max(2, min(3, $count)).'">';
+                    foreach ($cards as $c) {
+                        $out .= $drawCard($c, $level);
+                    }
+
+                    return $out.'</div>';
+                };
+            }
+            if (in_array($index, $landing['skip'], true)) {
+                continue;
+            }
+
             $head = [];
             $rest = [];
             $seenBody = false;
             foreach ($nodes as $n) {
-                if (! $seenBody && ($tag($n) === 'h2' || $tag($n) === 'p')) {
+                if (! $seenBody && ($tag($n) === 'h2' || ($tag($n) === 'p' && ! $isCta($n) && ! $isChip($n)))) {
                     $head[] = $n;
                 } else {
                     $seenBody = true;
                     $rest[] = $n;
                 }
             }
-            $h3s = collect($rest)->filter(fn ($n) => $tag($n) === 'h3')->count();
-            $isStop = $hasFigure && $h3s === 0;
+            [$cards, $out] = $gather($rest);
+            $hasHead = collect($head)->contains(fn ($n) => $tag($n) === 'h2');
+            $snippet = collect($rest)->first(fn ($n) => $tag($n) === 'figure' && str_contains($cls($n), 'card-snippet'));
+            $grid = collect($rest)->first(fn ($n) => $boldList($n) && $hasFigure);
             // Cards under no heading of their own sit directly under the page's h1: their titles are h2, so the order holds.
-            $cardLevel = collect($head)->contains(fn ($n) => $tag($n) === 'h2') ? 3 : 2;
-            $isClosing = $isLast && collect($rest)->contains(fn ($n) => $isButton($n) || $isCta($n));
+            $cardLevel = $hasHead ? 3 : 2;
+            $isClosing = $isLast && $cards === [] && collect($rest)->contains(fn ($n) => $isButton($n) || $isCta($n));
+            // The sections after this one that join it: a plain heading with words becomes a wide card, cards under no heading join its grid.
+            $joined = [];
+            for ($next = $index + 1; $next < count($sections) && $hasHead && ! $isClosing; $next++) {
+                $kind = $sectionKind($sections[$next]);
+                if ($kind === 'other' || ($kind === 'plain' && $next === array_key_last($sections))) {
+                    break;
+                }
+                $joined[] = [$kind, $sections[$next]];
+                $landing['skip'][] = $next;
+            }
+            $tight = ! $hasHead && ! $isClosing;
+            $tone = '';
+            if (! $tight && ! $isClosing) {
+                $tone = $landing['toneN'] % 2 === 1 ? ' chrome' : '';
+                $landing['toneN']++;
+            }
+            $kickerTags = [];
+            if ($kicker !== null && str_contains($kicker, ' · ')) {
+                $kickerParts = array_map('trim', explode(' · ', $kicker));
+                $kicker = array_shift($kickerParts);
+                $kickerTags = $kickerParts;
+            }
         @endphp
-        @if ($isStop)
-            <section class="section{{ $tone }}">
-                <div class="wrap stop{{ $index % 2 === 1 ? ' flip' : '' }}">
-                    <div class="stop-text">
-                        @if ($kicker !== null)<span class="stop-num">{{ $kicker }}</span>@endif
-                        @foreach ($nodes as $n)
-                            @if ($tag($n) === 'h2')<h2 class="h3x">{!! $inner($n) !!}</h2>@elseif (! $isFigure($n)){!! $html($n) !!}@endif
+        <section class="{{ $isClosing ? 'section closing' : 'sec'.$tone.($tight ? ' tight' : '') }}"@if (! $hasHead && ! $isClosing) aria-label="{{ trim(collect($cards)->map(fn ($c) => trim($c['h']->textContent))->implode(', ')) }}"@endif>
+            @if ($snippet !== null && $cards === [])
+                {{-- words on the left, the code on the right --}}
+                <div class="wrap two code-two">
+                    <div>
+                        @if ($kicker !== null)<span class="kicker">{{ $kicker }}</span>@endif
+                        @foreach ($head as $i => $n)
+                            @if ($tag($n) === 'h2')<h2 id="{{ $slug($n->textContent) }}" class="h2">{!! $inner($n) !!}</h2>
+                            @elseif ($i === 1)<p class="sec-lead">{!! $inner($n) !!}</p>
+                            @else<p class="small muted code-note">{!! $inner($n) !!}</p>
+                            @endif
                         @endforeach
+                        @foreach ($out as $n)@if ($n !== $snippet){!! $html($n) !!}@endif @endforeach
                     </div>
-                    <div>@foreach ($nodes as $n)@if ($isFigure($n)){!! $html($n) !!}@endif @endforeach</div>
+                    <div class="code-side">{!! $html($snippet) !!}</div>
                 </div>
-            </section>
-        @else
-            <section class="{{ $isClosing ? 'section closing' : 'sec'.$tone }}">
+            @else
                 <div class="wrap">
                     @if ($head !== [])
                         <div class="sec-head">
-                            @if ($kicker !== null)<span class="kicker">{{ $kicker }}</span>@endif
+                            @if ($kicker !== null)<span class="kicker">{{ $kicker }}@foreach ($kickerTags as $kt) <span class="tag">{{ $kt }}</span>@endforeach</span>@endif
                             @foreach ($head as $n)
-                                @if ($tag($n) === 'h2')<h2 id="{{ $slug($n->textContent) }}">{!! $inner($n) !!}</h2>@else<p class="sec-lead">{!! $inner($n) !!}</p>@endif
+                                @if ($tag($n) === 'h2')<h2 id="{{ $slug($n->textContent) }}">{!! $inner($n) !!}</h2>
+                                @else<p class="sec-lead">{!! $inner($n) !!}</p>
+                                @endif
                             @endforeach
                         </div>
                     @endif
-                    @php
-                        $run = [];
-                        $cards = [];
-                        $card = null;
-                        $out = [];
-                        foreach ($rest as $n) {
-                            if ($tag($n) === 'h3') {
-                                $cards[] = ['h' => $n, 'body' => []];
-                                $card = array_key_last($cards);
-                            } elseif ($card !== null && ! $isFigure($n) && $tag($n) !== 'ol') {
-                                $cards[$card]['body'][] = $n;
-                            } else {
-                                $card = null;
-                                $out[] = ['block', $n];
-                            }
-                        }
-                    @endphp
                     @if ($cards !== [])
-                        <div class="cards cards-{{ count($cards) }}">
-                            @foreach ($cards as $c)
-                                <div class="card"><h{{ $cardLevel }}>{!! $inner($c['h']) !!}</h{{ $cardLevel }}>@foreach ($c['body'] as $bn){!! $html($bn) !!}@endforeach</div>
-                            @endforeach
-                        </div>
+                        {!! $drawCards($cards, $cardLevel) !!}
                     @endif
-                    @foreach ($out as [, $n])
+                    @php $run = []; @endphp
+                    @foreach ($out as $n)
                         @if ($isButton($n) || $isCta($n))
                             @php $run[] = $n; @endphp
                         @else
                             {!! $flush() !!}
-                            @if ($tag($n) === 'ol')<div class="steps">{!! $html($n) !!}</div>
+                            @if ($tag($n) === 'ol')
+                                {!! $drawList($n, 'ol', 'mig-steps') !!}
+                            @elseif ($grid !== null && $n === $grid)
+                                {!! $drawList($n, 'ul', 'surfaces') !!}
+                            @elseif ($grid !== null && $isFigure($n))
+                                {{-- the picture of the ten places is drawn above as cards --}}
+                            @elseif ($boldList($n))
+                                {!! $drawList($n, 'ul', 'need-list') !!}
                             @elseif ($isFigure($n))<div class="one-shot">{!! $html($n) !!}</div>
                             @elseif (str_contains($cls($n), 'card-callout'))<div class="banner" role="note">{!! $inner($n) !!}</div>
                             @else{!! $html($n) !!}
@@ -347,9 +550,34 @@
                         @endif
                     @endforeach
                     {!! $flush() !!}
+                    @foreach ($joined as [$kind, $joinedNodes])
+                        @php
+                            $joinedKicker = null;
+                            if ($joinedNodes !== [] && $isKicker($joinedNodes[0])) {
+                                $joinedKicker = trim($joinedNodes[0]->textContent);
+                                array_shift($joinedNodes);
+                            }
+                        @endphp
+                        @if ($kind === 'cards')
+                            @php [$joinedCards] = $gather($joinedNodes); @endphp
+                            {!! $drawCards($joinedCards, 3) !!}
+                        @else
+                            @php $joinedButtons = array_values(array_filter($joinedNodes, fn ($n) => $isButton($n) || $isCta($n))); @endphp
+                            <div class="card wide-card">
+                                <div class="wide-words">
+                                    @foreach ($joinedNodes as $n)
+                                        @if ($tag($n) === 'h2')<h3>{!! $inner($n) !!}@if ($joinedKicker !== null) <span class="tag">{{ $joinedKicker }}</span>@endif</h3>
+                                        @elseif (! $isButton($n) && ! $isCta($n)){!! $html($n) !!}
+                                        @endif
+                                    @endforeach
+                                </div>
+                                @foreach ($joinedButtons as $b){!! $asButton($b) !!}@endforeach
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
-            </section>
-        @endif
+            @endif
+        </section>
     @endif
 @endforeach
 {!! temecms_pictures((string) ob_get_clean()) !!}

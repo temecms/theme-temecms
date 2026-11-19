@@ -93,7 +93,7 @@
     @media (max-width: 1100px) { .steps ol { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     @media (max-width: 600px) { .steps ol { grid-template-columns: minmax(0, 1fr); } }
     .sec .one-shot { margin-top: 32px; }
-    .sec ul:not(.cards) { padding-inline-start: 1.2em; margin: 16px 0 0; display: grid; gap: 8px; color: var(--teme-ink-2); }
+    .sec ul:not(.cards, .surfaces, .need-list, .mig-steps) { padding-inline-start: 1.2em; margin: 16px 0 0; display: grid; gap: 8px; color: var(--teme-ink-2); }
     .sec .wrap > p { margin-top: 14px; max-width: 760px; color: var(--teme-ink-2); }
     .page-hero .wrap > p + p { margin-top: 12px; }
     .page-hero .banner { margin-top: 20px; max-width: 760px; }
@@ -179,8 +179,29 @@
 }
 
 @layer teme.theme {
+    /* the landing pages as the drawings lay them out (sectioned.blade.php) */
     picture { display: block; }
+    .page-hero .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 20px; }
+    .card h2, .hood-row h2 { font: 600 var(--text-lead)/1.3 var(--teme-font-sans); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; letter-spacing: 0; }
+    .card h3 .tag, .card h2 .tag, .kicker .tag { font-weight: 500; }
+    .card .foot .go { color: var(--accent-ink); font-weight: 500; font-size: var(--text-body); text-decoration: none; }
+    .card .foot .go:hover { text-decoration: underline; }
+    .card code { overflow-wrap: anywhere; }
+    .sec-head + .grid-3, .sec-head + .grid-2, .sec-head + .hood, .sec-head + .across-grid, .sec-head + .need-list { margin-top: 32px; }
+    .sec.tight .grid-3:first-child, .sec.tight .grid-2:first-child { margin-top: 0; }
+    .across-h { display: flex; gap: 8px; align-items: center; font: 600 var(--mk-body)/1.4 var(--teme-font-sans); letter-spacing: 0; }
+    .across-h svg { width: 18px; height: 18px; color: var(--teme-ok); flex: none; }
+    .need-list + .grid-2, .need-list + .grid-3 { margin-top: 16px; }
+    .wide-card { margin-top: 16px; flex-direction: row; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+    .wide-card .wide-words { flex: 1 1 320px; min-width: 0; }
+    .wide-card .wide-words > p + p { margin-top: 10px; }
+    .mig-steps + .one-shot { margin-top: 32px; }
+    .code-two { align-items: center; margin-top: 0; }
+    .code-two .h2 { margin-top: 10px; }
+    .code-two .code-note { margin-top: 14px; }
+    .code-side { min-width: 0; }
     .code-side .card-snippet { margin: 0; }
+    .surfaces + * { margin-top: 24px; }
     /* a theme's README pictures: the wide one in the column, the phone one at a phone's size over its lower corner */
     .shot-duo { position: relative; margin-block: 2rem; padding-inline-end: 9%; padding-block-end: 9%; }
     .shot-duo > .card-image { margin: 0 !important; }
