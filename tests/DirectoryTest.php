@@ -209,6 +209,14 @@ it('gives a guide\'s code its language and the callouts their word, wraps tables
         ->and($prose['toc'])->toBe([['id' => 'get-the-recipe', 'text' => 'Get the recipe'], ['id' => 'get-the-recipe-2', 'text' => 'Get the recipe']]);
 });
 
+it('gives a README its code frames and ids but no # anchors, which only the docs draw', function (): void {
+    $html = drawView('partials.dir.overview', ['html' => '<h2>Install</h2><pre><code class="language-bash">composer require a/b</code></pre>', 'listing' => temecms_listing(temeSeo())]);
+
+    expect($html)->toContain('<h2 id="install">Install</h2>')
+        ->toContain('<span class="lang">bash</span>')
+        ->not->toContain('class="anchor"');
+});
+
 it('builds the docs tree from the docs menu\'s headings, or else from the three guides', function (): void {
     $link = fn (string $label, bool $current = false) => ['label' => $label, 'url' => '/docs/'.strtolower($label).'/', 'current' => $current, 'opensNewTab' => false, 'heading' => false, 'children' => []];
     $fromDocs = temecms_docs_tree(['docs' => [['label' => 'Getting started', 'url' => null, 'current' => false, 'opensNewTab' => false, 'heading' => true, 'children' => [$link('Introduction'), $link('Installing', true)]]]], []);

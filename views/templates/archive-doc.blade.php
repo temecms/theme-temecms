@@ -36,7 +36,11 @@
         if ($popular !== []) {
             $toc[] = ['id' => 'popular', 'text' => __('Popular pages')];
         }
-        $toc[] = ['id' => 'whats-new', 'text' => __('What’s new')];
+        // The region drawn here first, so an empty one leaves out its heading and its line in "On this page".
+        $whatsNew = trim(\Illuminate\Support\Facades\Blade::render('<x-teme::region name="docs-whats-new" />'));
+        if ($whatsNew !== '') {
+            $toc[] = ['id' => 'whats-new', 'text' => __('What’s new')];
+        }
         $prev = null;
         $next = $flat[0] ?? null;
         $title = $page->subject?->title ?? __('Documentation');
@@ -76,8 +80,10 @@
                         </div>
                     @endif
 
+                    @if ($whatsNew !== '')
                     <h2 id="whats-new"><a class="anchor" href="#whats-new" aria-label="{{ __('Link to “:heading”', ['heading' => __('What’s new')]) }}">#</a>{{ __('What’s new') }}@if ($versionLabel !== '' || $versions !== []) {{ __('in :version', ['version' => $versions !== [] ? $versions[0]['label'] : $versionLabel]) }}@endif</h2>
-                    <div class="whatsnew-region"><x-teme::region name="docs-whats-new" /></div>
+                    <div class="whatsnew-region">{!! $whatsNew !!}</div>
+                    @endif
 
                     @include('theme::partials.dir.docs-foot', ['editUrl' => '', 'checkedLine' => '', 'prev' => null, 'next' => null])
                 </article>

@@ -577,7 +577,8 @@
   .cb-bar { display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 4px 6px 4px 12px; box-shadow: 0 1px 0 var(--line); font-size: var(--t-xs); color: var(--ink-3); }
   .cb-bar .lang { font: 500 var(--t-xs)/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; }
   .cb-bar .file { font-family: var(--font-mono); color: var(--ink-2); }
-  .cb-bar .copy-btn { margin-left: auto; }
+  .cb-bar .copy-btn { margin-left: auto; position: static; }
+  .card-snippet:has(> .codeblock) { margin: 16px 0 0; background: none; box-shadow: none; border-radius: 0; overflow: visible; }
   .codeblock pre { margin: 0; padding: 14px 16px; overflow-x: auto; font: 400 var(--t-sm)/1.65 var(--font-mono); color: var(--ink); tab-size: 2; }
   .codeblock pre code { font-size: inherit; background: none; padding: 0; border-radius: 0; }
   .tok-c { color: var(--ink-3); }
@@ -756,6 +757,9 @@
   .tree-sub > summary { font-weight: 500; color: var(--ink-2); padding-left: 12px; }
   .tree-group > summary::-webkit-details-marker, .tree-sub > summary::-webkit-details-marker { display: none; }
   .docs-tree summary::after, .otp-inline summary::after { content: none; }
+  .docs-tree .tree-group > ul { padding-left: 0; margin: 2px 0 0; }
+  .docs-tree .tree-group a { box-shadow: none; border-radius: var(--radius-sm); }
+  .docs-tree .tree-group a[aria-current="page"] { box-shadow: none; }
   .tree-group > summary:hover, .tree-sub > summary:hover { background: var(--surface-3); }
   .tree-group > summary svg, .tree-sub > summary svg { width: 16px; height: 16px; color: var(--ink-3); transition-property: rotate; transition-duration: var(--dur-2); }
   .tree-group:not([open]) > summary svg, .tree-sub:not([open]) > summary svg { rotate: -90deg; }

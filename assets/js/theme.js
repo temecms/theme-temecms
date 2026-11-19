@@ -80,7 +80,7 @@ if (faq) {
 // Copy on a code block.
 $$('.card-snippet').forEach((figure) => {
     const pre = $('pre', figure);
-    if (!pre || !navigator.clipboard) return;
+    if (!pre || !navigator.clipboard || $('.codeblock', figure)) return; // the docs' code frame has its own Copy
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'copy-btn';
@@ -491,8 +491,12 @@ if (sov) {
     const res = $('[data-sov-res]', sov);
     const opener = $('[data-open-search]');
     const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+    // One entry per page, whether its address came written in full or as a path; a fuller one keeps its summary and group.
+    const pathOf = (url) => { try { return new URL(url, location.href).pathname; } catch { return url; } };
+    const byPath = new Map();
+    const add = (e) => { const key = pathOf(e.url); const had = byPath.get(key); if (had) { had.summary ||= e.summary; had.group ||= e.group; } else { byPath.set(key, e); index.push(e); } };
     let index = [];
-    try { index = JSON.parse(sov.dataset.index || '[]'); } catch { index = []; }
+    try { JSON.parse(sov.dataset.index || '[]').forEach(add); } catch { index = []; }
     let fuller = false;
     const loadFuller = async () => {
         if (fuller || !sov.dataset.src || !window.fetch) return;
@@ -501,8 +505,7 @@ if (sov) {
             const r = await fetch(sov.dataset.src, { credentials: 'same-origin' });
             const other = new DOMParser().parseFromString(await r.text(), 'text/html').querySelector('[data-sov]');
             const more = JSON.parse(other?.dataset.index || '[]');
-            const byUrl = new Map(index.map((e) => [e.url, e]));
-            more.forEach((e) => { const had = byUrl.get(e.url); if (had) { had.summary ||= e.summary; } else { index.push(e); } });
+            more.forEach(add);
             if (!sov.hidden) draw();
         } catch { /* the tree's own list is enough */ }
     };

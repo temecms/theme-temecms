@@ -153,13 +153,13 @@
         }
 
         /**
-         * A guide's body as the docs draw it: headings with ids and # anchors, code in a block with its language and
+         * A guide's body as the docs draw it: headings with ids and # anchors (none for a README), code in a block with its language and
          * room for Copy, the callouts with an icon and their word, tables in a scroll wrapper. Returns the HTML and
          * the h2 headings for "On this page".
          *
          * @return array{html: string, toc: list<array{id: string, text: string}>}
          */
-        function temecms_doc_prose(string $html): array
+        function temecms_doc_prose(string $html, bool $anchors = true): array
         {
             if (trim($html) === '') {
                 return ['html' => '', 'toc' => []];
@@ -198,11 +198,13 @@
                 $used[$id] = true;
                 $el->setAttribute('id', $id);
                 $text = trim($el->textContent);
-                $a = $dom->createElement('a', '#');
-                $a->setAttribute('class', 'anchor');
-                $a->setAttribute('href', '#'.$id);
-                $a->setAttribute('aria-label', __('Link to “:heading”', ['heading' => $text]));
-                $el->insertBefore($a, $el->firstChild);
+                if ($anchors) {
+                    $a = $dom->createElement('a', '#');
+                    $a->setAttribute('class', 'anchor');
+                    $a->setAttribute('href', '#'.$id);
+                    $a->setAttribute('aria-label', __('Link to “:heading”', ['heading' => $text]));
+                    $el->insertBefore($a, $el->firstChild);
+                }
                 if ($el->nodeName === 'h2') {
                     $toc[] = ['id' => $id, 'text' => $text];
                 }

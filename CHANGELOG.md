@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+The free plugin and theme directory, as drawn: the theme draws the fields the temecms-site plugin (1.1.0) fills from the directory's index.
+
+- **Plugins** and **Themes** are two pages. Search, categories with their counts, "Works with Teme", sort, the count, equal cards (pictures for themes) and page numbers; on the first page, the strips Recently updated, New and Picked by the Teme team. Without the script every listing shows.
+- **A plugin's page**: its header with Install and Source, five tabs (Overview, Screenshots, Changelog, Permissions, Support) and the facts beside them, with "Ratings and reviews: later", more from the author, and Report this listing.
+- **A theme's page**: a gallery in a laptop and a phone frame, and Preview before Install.
+- **Submit a plugin or theme**, a page template: the form, which the plugin turns into a pull request on the directory, the four public steps and the rules in brief. The plugin's answer shows on the page.
+- **Showcase**: sites built with Teme, by kind, each with its theme and plugins, and the form to add a site.
+- **The documentation** in three columns: the tree with a version switcher, the article, "On this page". Search with Ctrl K, ⌘ K or /; code with its language and Copy; Note, Tip and Warning; previous and next; "Was this page helpful?". The docs home has a card per audience, popular pages and what's new.
+- New settings: the addresses of Plugins, Themes, Submit, the docs home and the guides they link to, the documentation's versions, and where "this page didn't help" goes. New menu slots `docs` and `docs-popular`, and the region `docs-whats-new`.
+- The regions `plugins-intro`, `plugins-how`, `themes-intro` and `themes-build` are no longer drawn; they stay declared so what they hold isn't lost.
+- The browser checks run light and dark, and `tests/states.mjs` checks the pages' open states (search, preview, tabs, the forms' answers).
+
+What a site owner does: update the temecms-site plugin to 1.1.0 and run its directory sync, update this theme, make a page with the template Submit a plugin or theme at `/submit/`, and fill the menu `docs-popular` and the region `docs-whats-new` if you want those sections.
+
 ## 0.2.0
 
 The theme is only the looks again. temecms.com's content moved to the new **temecms-site** plugin (`temecms/temecms-site`): the content types Documentation, Plugin directory and Theme directory with their fields, and the seed that loads the pages, posts, guides, listings, pictures, regions, menus and settings. Switching themes no longer takes the site's types with it, and the admin's menu no longer shows Plugins and Themes twice.
