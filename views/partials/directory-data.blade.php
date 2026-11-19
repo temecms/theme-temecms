@@ -396,6 +396,25 @@
         }
 
         /**
+         * A README without its opening paragraph when that paragraph says the summary again (the same words, or the
+         * summary's words at its start), since the item's header already shows the summary. Callouts before it stay.
+         */
+        function temecms_without_summary(string $html, string $summary): string
+        {
+            $plain = fn (string $t): string => strtolower(trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($t), ENT_QUOTES | ENT_HTML5, 'UTF-8'))));
+            $said = rtrim($plain($summary), " .!?:;,");
+            if ($said === '' || ! preg_match('/^((?:\s*<div class="card-callout[^"]*"[^>]*>.*?<\/div>)*)\s*<p(?:\s[^>]*)?>(.*?)<\/p>/s', $html, $m)) {
+                return $html;
+            }
+            $first = $plain($m[2]);
+            if ($first !== $said && ! str_starts_with($first, $said)) {
+                return $html;
+            }
+
+            return $m[1].substr($html, strlen($m[0]));
+        }
+
+        /**
          * A README's wide picture followed by a phone picture, set as one composition: the wide picture in the column
          * and the phone picture at a phone's size over its lower corner. A phone picture is one whose text names a
          * phone or that is taller than it is wide. Other pictures stay as they are.

@@ -300,6 +300,17 @@ it('links a showcase site\'s theme and plugins and counts its kinds', function (
         ->toContain('>temecms.com</a>');
 });
 
+it('leaves the summary out of the Overview when the README opens with it, as the header already shows it', function (): void {
+    $listing = temecms_listing(temeSeo(['summary' => 'An audit of every post.']));
+    $same = drawView('partials.dir.overview', ['html' => '<p>An audit of every post.</p><p>It reads each post.</p>', 'listing' => $listing]);
+    $longer = drawView('partials.dir.overview', ['html' => '<div class="card-callout card-callout--note" role="note"><p>Example.</p></div><p>An audit of every post, with its fixes.</p><p>It reads each post.</p>', 'listing' => $listing]);
+    $other = drawView('partials.dir.overview', ['html' => '<p>Something else first.</p>', 'listing' => $listing]);
+
+    expect($same)->not->toContain('An audit of every post.')->toContain('It reads each post.')
+        ->and($longer)->not->toContain('An audit of every post, with its fixes.')->toContain('Example.')
+        ->and($other)->toContain('Something else first.');
+});
+
 it('sets a README\'s wide picture and the phone picture after it as one composition, and leaves other pictures alone', function (): void {
     $wide = fn (string $name): string => '<figure class="card-image card-image--wide"><img src="/m/'.$name.'-w920.webp" alt="On a wide screen" width="920" height="562"></figure>';
     $html = drawView('partials.dir.overview', ['listing' => temecms_listing(temeSeo()), 'html' => '<p>Intro.</p>'

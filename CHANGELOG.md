@@ -26,6 +26,7 @@ Closer to the drawings, everywhere:
 - The Teme icon is the browser tab's icon, light and dark, with a PNG for browsers without SVG icons.
 - A code block's name and Copy sit in a bar over the code, and a long line scrolls inside the block.
 - Hosting, Developers and Moving from WordPress are laid out as drawn: tables, icons, step cards, code beside its words, the ten places as a grid of five by two, and the usual space between sections.
+- A plugin's or theme's Overview leaves out an opening paragraph that repeats the summary in its header.
 
 What a site owner does: update the temecms-site plugin to 1.1.0 and run its directory sync, update this theme, make a page with the template Submit a plugin or theme at `/submit/`, and fill the menu `docs-popular` and the region `docs-whats-new` if you want those sections.
 
