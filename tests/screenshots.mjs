@@ -12,9 +12,13 @@ export const PAGES = {
     'docs-article': '/docs/install/',
     plugins: '/plugins/',
     plugin: '/plugins/review-notifier/',
+    'plugin-synced': '/plugins/teme-seo/',
+    submit: '/submit/',
     'plugins-submit': '/publish-a-plugin/',
     themes: '/theme-directory/',
     theme: '/theme-directory/teme-default/',
+    'theme-synced': '/theme-directory/theme-ledger/',
+    showcase: '/showcase/',
     migration: '/moving-from-wordpress/',
     hosting: '/hosting/',
     developers: '/developers/',
@@ -27,7 +31,7 @@ const out = path.join(import.meta.dirname, '..', 'docs', 'screenshots');
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     fs.mkdirSync(out, { recursive: true });
     const want = process.argv.slice(2);
-    const browser = await chromium.launch({ channel: 'chrome' });
+    const browser = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : { channel: 'chrome' });
     for (const [name, url] of Object.entries(PAGES)) {
         if (want.length && !want.includes(name)) continue;
         for (const [w, h] of [[1280, 900], [375, 800]]) {

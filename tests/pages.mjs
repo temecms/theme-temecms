@@ -1,6 +1,6 @@
-// Browser checks of every page of the site loaded with the temecms-site plugin's content, at 1280 and 375 wide: it answers 200, it has one h1,
+// Browser checks of every page of the site loaded with the temecms-site plugin's content, at 1280 and 375 wide, light and dark: it answers 200, it has one h1,
 // headings are in order, every picture has alt text and a size, nothing scrolls sideways, and axe finds no violation.
-// Run against that site:  BASE=http://localhost:8000 node tests/pages.mjs      (exit code 1 on any failure)
+// Run against that site:  BASE=http://localhost:8000 node tests/pages.mjs [name ...]     (exit code 1 on any failure)
 import { chromium } from 'playwright-core';
 import AxeBuilder from '@axe-core/playwright';
 import fs from 'node:fs';
@@ -9,12 +9,14 @@ import { PAGES, BASE } from './screenshots.mjs';
 
 const outDir = path.join(import.meta.dirname, '.output');
 fs.mkdirSync(outDir, { recursive: true });
-const browser = await chromium.launch({ channel: 'chrome' });
+const browser = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : { channel: 'chrome' });
 const results = [];
 let failures = 0;
+const want = process.argv.slice(2);
 for (const [name, url] of Object.entries(PAGES)) {
-    for (const [w, h] of [[1280, 900], [375, 800]]) {
-        const context = await browser.newContext({ viewport: { width: w, height: h } });
+    if (want.length && !want.includes(name)) continue;
+    for (const [w, h, scheme] of [[1280, 900, 'light'], [375, 800, 'light'], [1280, 900, 'dark'], [375, 800, 'dark']]) {
+        const context = await browser.newContext({ viewport: { width: w, height: h }, colorScheme: scheme });
         const page = await context.newPage();
         const res = await page.goto(BASE + url, { waitUntil: 'networkidle' });
         const facts = await page.evaluate(() => {
@@ -42,8 +44,8 @@ for (const [name, url] of Object.entries(PAGES)) {
         if (facts.sideways) problems.push('scrolls sideways');
         for (const v of axe.violations) problems.push(`axe ${v.id} (${v.impact}): ${v.nodes.length} node(s), e.g. ${v.nodes[0]?.target?.join(' ')}`);
         if (problems.length) failures += 1;
-        results.push({ page: name, width: w, status: res?.status(), problems });
-        console.log(`${problems.length ? 'FAIL' : 'ok  '} ${name} ${w}${problems.length ? ' :: ' + problems.join(' | ') : ''}`);
+        results.push({ page: name, width: w, scheme, status: res?.status(), problems });
+        console.log(`${problems.length ? 'FAIL' : 'ok  '} ${name} ${w} ${scheme}${problems.length ? ' :: ' + problems.join(' | ') : ''}`);
         await context.close();
     }
 }

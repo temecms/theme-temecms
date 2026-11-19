@@ -1,107 +1,55 @@
 {{--
-    A guide, set in full: the guide's tree (a menu in the slot docs-{guide}), the article with its standfirst, proof mark, steps,
-    code and notes, the page's own contents ("On this page", made from its headings), and the previous and next guide taken from the tree.
+    A guide, in the documentation's frame: the tree on the left (with the version switcher), the article in the middle
+    (breadcrumbs, title, summary, body with anchors, code with its language and Copy, the callouts, tables that scroll),
+    "On this page" on the right, then previous and next, Edit this page, when it was checked, and "Was this page helpful?".
 --}}
 @extends('theme::layouts.base')
 
+@section('head-search')
+    @include('theme::partials.dir.docs-head-search')
+@endsection
+
 @section('main')
+    @include('theme::partials.directory-data')
     @php
-        $guide = (string) ($page->field('guide')?->value ?? '');
-        $guideLabel = (string) ($page->field('guide')?->text ?? '');
-        $group = (string) ($page->field('group')?->text ?? '');
-        $proof = (string) ($page->field('proof')?->text ?? '');
+        extract(temecms_docs_frame($navigation ?? null, $themeSettings ?? [], $teme ?? null, $site, (string) $page->url));
+        $prose = temecms_doc_prose($page->bodyHtml);
+        $toc = $prose['toc'];
+        $group = trim((string) ($page->field('group')?->text ?? ''));
+        $proof = trim((string) ($page->field('proof')?->text ?? ''));
         $proofKey = (string) ($page->field('proof')?->value ?? '');
-        $writtenFor = (string) ($page->field('written_for')?->text ?? '');
-        $isSoon = (bool) ($page->field('soon')?->value ?? false);
-        $slot = 'docs-'.$guide;
-
-        // The body's headings get anchors, and "On this page" lists the h2s.
-        libxml_use_internal_errors(true);
-        $dom = new DOMDocument('1.0', 'UTF-8');
-        $dom->loadHTML('<?xml encoding="utf-8" ?><body>'.$page->bodyHtml.'</body>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        libxml_clear_errors();
-        $toc = [];
-        foreach ($dom->getElementsByTagName('pre') as $pre) {
-            $pre->setAttribute('tabindex', '0');
-        }
-        foreach (['h2', 'h3'] as $level) {
-            foreach ($dom->getElementsByTagName($level) as $h) {
-                if (! $h->hasAttribute('id')) {
-                    $h->setAttribute('id', trim((string) preg_replace('/[^a-z0-9]+/', '-', strtolower($h->textContent)), '-'));
-                }
-            }
-        }
-        foreach ($dom->getElementsByTagName('h2') as $h) {
-            $toc[] = ['id' => $h->getAttribute('id'), 'text' => $h->textContent];
-        }
-        $bodyHtml = '';
-        foreach ($dom->getElementsByTagName('body')->item(0)->childNodes as $n) {
-            $bodyHtml .= $dom->saveHTML($n);
-        }
-
-        // Previous and next: the tree's items in order, around the current one.
-        $flat = [];
-        $walk = function (array $items) use (&$walk, &$flat) {
-            foreach ($items as $it) {
-                if (! $it['heading'] && $it['url'] !== null) {
-                    $flat[] = $it;
-                }
-                $walk($it['children'] ?? []);
-            }
-        };
-        $walk($navigation[$slot] ?? []);
-        $at = collect($flat)->search(fn ($it) => $it['current']);
+        $editField = $page->field('edit_url');
+        $editUrl = ($editField !== null && ! $editField->empty) ? (string) $editField->value : '';
+        $at = collect($flat)->search(fn ($it) => (bool) ($it['current'] ?? false));
         $prev = $at !== false && $at > 0 ? $flat[$at - 1] : null;
         $next = $at !== false && $at < count($flat) - 1 ? $flat[$at + 1] : null;
+        $when = $page->revised ?? $page->updated ?? $page->published;
+        $checked = __('Updated :date', ['date' => $when->format('j M Y')]);
+        if ($proof !== '' && $proofKey !== 'none') {
+            $checked .= ' · '.$proof;
+        }
+        $index[] = ['title' => $page->title, 'url' => $page->url, 'summary' => (string) $page->standfirst, 'group' => $group !== '' ? $group : __('This page'), 'headings' => $toc];
     @endphp
-
-    <div class="docs-bar">
-        <div class="wrap">
-            <nav class="crumbs" aria-label="{{ __('Breadcrumb') }}"><a href="{{ $site->url }}docs/">{{ __('Docs') }}</a><span aria-hidden="true">/</span><span>{{ $guideLabel }}</span><span aria-hidden="true">/</span><b>{{ $group }}</b></nav>
-            @include('theme::partials.search-form', ['id' => 'docs-q', 'label' => __('Search the documentation'), 'placeholder' => __('Search the docs')])
-            @include('theme::partials.docs-version')
+    <div class="dx docs-page">
+        <div class="docs-subbar">
+            <button type="button" class="btn btn-quiet" data-tree-open aria-expanded="false" aria-controls="docs-tree" hidden>@include('theme::partials.dir.glyph', ['icon' => 'menu']){{ __('Menu') }}</button>
+            <span class="where">@if ($group !== ''){{ $group }} › @endif{{ $page->title }}</span>
         </div>
-    </div>
-
-    <div class="wrap docs-shell">
-        <div class="docs-tree">
-            <details class="tree-details" open>
-                <summary>{{ $guideLabel }}</summary>
-                <x-teme::navigation :slot="$slot" :label="$guideLabel" />
-            </details>
+        <div class="docs-shell">
+            @include('theme::partials.dir.docs-tree')
+            <div class="docs-main">
+                @include('theme::partials.dir.docs-banner')
+                <article class="article">
+                    <nav class="d-crumbs" aria-label="{{ __('Breadcrumb') }}">@if ($docsHome !== '')<a href="{{ $docsHome }}">{{ __('Docs') }}</a><span aria-hidden="true">/</span>@endif @if ($group !== '')<span>{{ $group }}</span><span aria-hidden="true">/</span>@endif<span aria-current="page">{{ $page->title }}</span></nav>
+                    <h1>{{ $page->title }}</h1>
+                    @if ($page->standfirst !== null && $page->standfirst !== '')<p class="standfirst">{{ $page->standfirst }}</p>@endif
+                    @include('theme::partials.dir.docs-otp-inline')
+                    <div class="prose">{!! $prose['html'] !!}</div>
+                    @include('theme::partials.dir.docs-foot', ['editUrl' => $editUrl, 'checkedLine' => $checked])
+                </article>
+            </div>
+            @include('theme::partials.dir.docs-otp')
         </div>
-
-        <div class="docs-main">
-            <article class="article">
-                <p class="kick">{{ $guideLabel }} · {{ $group }}</p>
-                <h1>{{ $page->title }}</h1>
-                @if ($page->standfirst !== null && $page->standfirst !== '')<p class="standfirst">{{ $page->standfirst }}</p>@endif
-                <p class="meta-row">
-                    @if ($proof !== '')<span class="tag {{ $proofKey === 'none' ? '' : 'ok' }}">{{ $proof }}</span>@endif
-                    @if ($writtenFor !== '')<span>{{ __('Written for :what', ['what' => $writtenFor]) }}</span>@endif
-                    @if ($isSoon)<span class="tag">{{ __('Soon') }}</span>@endif
-                </p>
-                @if ($toc !== [])
-                    <details class="otp-inline"><summary>{{ __('On this page') }}</summary><ul>@foreach ($toc as $t)<li><a href="#{{ $t['id'] }}">{{ $t['text'] }}</a></li>@endforeach</ul></details>
-                @endif
-
-                <div class="prose">{!! $bodyHtml !!}</div>
-
-                @if ($prev !== null || $next !== null)
-                    <nav class="pager" aria-label="{{ __('Previous and next') }}">
-                        @if ($prev !== null)<a class="prev" href="{{ $prev['url'] }}"><small>{{ __('Previous') }}</small><b>{{ $prev['label'] }}</b></a>@endif
-                        @if ($next !== null)<a class="next" href="{{ $next['url'] }}"><small>{{ __('Next') }}</small><b>{{ $next['label'] }}</b></a>@endif
-                    </nav>
-                @endif
-            </article>
-        </div>
-
-        @if ($toc !== [])
-            <aside class="otp" aria-labelledby="otp-h">
-                <p class="otp-h" id="otp-h">{{ __('On this page') }}</p>
-                <ul>@foreach ($toc as $t)<li><a href="#{{ $t['id'] }}">{{ $t['text'] }}</a></li>@endforeach</ul>
-                <a class="back-top small" href="#top">{{ __('Back to the top') }}</a>
-            </aside>
-        @endif
+        @include('theme::partials.dir.docs-search')
     </div>
 @endsection
