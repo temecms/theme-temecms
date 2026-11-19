@@ -1,5 +1,5 @@
-// Full-page screenshots of every page of the seeded site, at 1280 and 375 wide, into docs/screenshots.
-// Run against a seeded site:  BASE=http://localhost:8000 node tests/screenshots.mjs [name ...]   (BASE defaults to http://localhost:8000)
+// Full-page screenshots of every page of the site loaded with the temecms-site plugin's content, at 1280 and 375 wide, into docs/screenshots.
+// Run against that site:  BASE=http://localhost:8000 node tests/screenshots.mjs [name ...]   (BASE defaults to http://localhost:8000)
 import { chromium } from 'playwright-core';
 import path from 'node:path';
 import fs from 'node:fs';

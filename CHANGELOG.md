@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0
+
+The theme is only the looks again. temecms.com's content moved to the new **temecms-site** plugin (`temecms/temecms-site`): the content types Documentation, Plugin directory and Theme directory with their fields, and the seed that loads the pages, posts, guides, listings, pictures, regions, menus and settings. Switching themes no longer takes the site's types with it, and the admin's menu no longer shows Plugins and Themes twice.
+
+- The `seed` folder is gone, and the README and CONTRIBUTING no longer describe seeding; they point to the plugin.
+- The documentation pages' version label shows the Teme release the site runs when the Documentation version label setting is empty, which is now its default. With a Teme too old to say its release, an empty setting shows no label.
+- The status line's description gives a current example.
+- The templates keep their names: they follow the type keys `doc`, `plugin` and `theme`, which the plugin keeps.
+
+What a site owner does: update Teme to 1.2.0, install and enable the temecms-site plugin (it takes over the types the old seed made, with all their content), then update this theme to 0.2.0. Nothing is loaded again. If you once set the Documentation version label, clear it under Site › Themes to show the running release. The plugin's README has the steps, under *Moving an existing site*.
+
 ## 0.1.2
 
 - The seed runs on a live Teme install made from the production image. It no longer needs Teme's testing kit or PHPUnit: it acts as the administrator `SEED_ADMIN_ID` itself, and a refused step prints the step and the reason and exits with a non-zero status.

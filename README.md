@@ -12,7 +12,7 @@ The theme of [temecms.com](https://temecms.com), the TemeCMS project's own websi
 
 - TemeCMS `^1.0`
 
-Working on the theme itself (assets, content, browser checks) needs more: see [CONTRIBUTING.md](CONTRIBUTING.md).
+Working on the theme itself (assets, browser checks) needs more: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Install
 
@@ -97,56 +97,17 @@ Under Site › Themes:
 | Status line (foot of every page and the home page; empty shows none) | empty |
 | Licence line (empty shows none) | MIT licence |
 | Show the latest blog posts on the home page | off |
-| Documentation version label | 0.7 |
+| Documentation version label (empty shows the Teme release the site runs) | empty |
 
-## Load the site on a live install
+## The site's content
 
-The theme carries the whole temecms.com site in its `seed` folder: pages, posts, guides, plugin and theme entries, product pictures, menus, regions and settings. One command puts it into a Teme install. It makes everything through Teme's own Operations, as an administrator would from the admin, and needs nothing that isn't in Teme's production image.
+The theme is only the looks. temecms.com's content types (Documentation, Plugin directory and Theme directory, with their fields), its starting content (pages, posts, guides, listings, pictures, regions and menus) and anything else the site does on its own live in the **temecms-site** plugin, `temecms/temecms-site`, so switching themes never makes content disappear. Install and enable that plugin, then load the content with its seed: its README says how, and how to move a site that the theme's seed (0.1.x) loaded.
 
-Before you start:
-
-- the theme is installed (see [Install](#install));
-- an administrator exists. If none does yet, make one with `php artisan teme:user:create --role=administrator --name="Your Name" --email=you@example.com` and open the link it prints. You need that administrator's user ID: the first user on a new site is `1`.
-
-Then, on Teme's Docker image (as with the recipe on Dokploy):
-
-1. Open a terminal in the **web** container (in Dokploy: the `web` service's Docker terminal; or `docker compose exec web sh` next to the compose file). The image's `php` runs as the site's own user, so the pictures the seed uploads stay writable by the site.
-2. Go to Teme's folder:
-
-   ```bash
-   cd /var/www/html
-   ```
-
-3. Run the seed. A theme installed from the admin lives in the extensions folder, under `current/vendor/temecms/theme-temecms` (installed another way, use the theme's own folder). Set `SEED_ADMIN_ID` to your administrator's ID:
-
-   ```bash
-   SEED_ADMIN_ID=1 php /var/teme/extensions/current/vendor/temecms/theme-temecms/seed/seed.php types fields media theme content regions menus settings addresses activate
-   ```
-
-The steps run in this order, whatever order you name them in:
-
-| Step | Does |
-|---|---|
-| `types` | Adds the content types Guide (`/docs/{slug}/`), Plugin (`/plugins/{slug}/`) and Theme |
-| `fields` | Adds their fields, and the page fields kicker and emphasis |
-| `media` | Uploads the product pictures in `seed/media` with their alt text |
-| `theme` | Makes `temecms` the site's theme (before `content`: a page picks its template from the active theme) |
-| `content` | Makes and publishes every page, post, guide, plugin and theme entry, with links between them stored as IDs |
-| `regions` | Fills the theme's regions |
-| `menus` | Makes the menus and puts them in the theme's slots |
-| `settings` | Sets the site's title and tagline |
-| `addresses` | Moves the theme directory to `/theme-directory/{slug}/` (core serves theme assets from `/themes/`) |
-| `activate` | Makes the home page the front page and the blog page the posts page |
-
-`theme`, `settings`, `addresses` and `activate` change the site's theme, title, addresses and front page, so run them only on a site meant for this content. Leave a step out to skip it.
-
-It is safe to run again. What the seed made before is found and reused, never duplicated, and a second run changes nothing: it ends with "Nothing to change". It remembers what it made in `storage/app/theme-temecms-seed.json` (set `SEED_STATE` to keep that file elsewhere); without that file it finds its pictures and items by name. Published items are left as they are, even if you have edited them since; to write the seed's version over a type's items again, name the type in `SEED_FORCE`, as in `SEED_FORCE=page,doc` (`region` for the regions).
-
-If Teme refuses a step, the seed prints the step and the reason, such as `Refused: Publishing Hosting. …`, stops, and exits with a non-zero status. Fix the cause and run the same command again: it carries on where it stopped.
+The templates for the directories and the documentation keep following the plugin's type keys: `doc`, `plugin` and `theme`.
 
 ## Working on the theme
 
-Building the assets, changing the seed's content, the tests and the browser checks are in [CONTRIBUTING.md](CONTRIBUTING.md). What changed in each version is in [CHANGELOG.md](CHANGELOG.md).
+Building the assets, the tests and the browser checks are in [CONTRIBUTING.md](CONTRIBUTING.md). What changed in each version is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Licence
 

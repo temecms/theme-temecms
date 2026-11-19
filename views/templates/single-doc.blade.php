@@ -59,7 +59,7 @@
         <div class="wrap">
             <nav class="crumbs" aria-label="{{ __('Breadcrumb') }}"><a href="{{ $site->url }}docs/">{{ __('Docs') }}</a><span aria-hidden="true">/</span><span>{{ $guideLabel }}</span><span aria-hidden="true">/</span><b>{{ $group }}</b></nav>
             @include('theme::partials.search-form', ['id' => 'docs-q', 'label' => __('Search the documentation'), 'placeholder' => __('Search the docs')])
-            <div class="end"><span class="ver"><span>{{ __('Version') }}</span> <b>{{ $themeSettings['docs_version'] ?? '' }}</b></span></div>
+            @include('theme::partials.docs-version')
         </div>
     </div>
 
