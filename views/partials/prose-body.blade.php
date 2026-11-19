@@ -1,4 +1,5 @@
-{{-- A body's HTML as the site draws it, given $html: headings get anchors, and a code block that scrolls can be reached by keyboard. --}}
+{{-- A body's HTML as the site draws it, given $html: headings get anchors, a code block that scrolls can be reached by keyboard, and a product picture gets its phone and dark versions. --}}
+@include('theme::partials.pictures')
 @php
     libxml_use_internal_errors(true);
     $proseDom = new DOMDocument('1.0', 'UTF-8');
@@ -19,4 +20,4 @@
         $proseOut .= $proseDom->saveHTML($proseNode);
     }
 @endphp
-{!! $proseOut !!}
+{!! temecms_pictures($proseOut) !!}

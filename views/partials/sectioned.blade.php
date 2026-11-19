@@ -5,9 +5,12 @@
       - a paragraph that is only bold text is the small label above the section's heading;
       - a paragraph that is only a bold link is a quiet button; core's button cards are buttons;
       - a picture beside text is a "stop"; headings (h3) followed by paragraphs are cards; a numbered list is steps.
+    A product picture gets its phone and dark versions (partials/pictures).
     Given $page (an ArticleView) and $variant: home, landing, faq or roadmap.
 --}}
+@include('theme::partials.pictures')
 @php
+    ob_start();
     libxml_use_internal_errors(true);
     $dom = new DOMDocument('1.0', 'UTF-8');
     $dom->loadHTML('<?xml encoding="utf-8" ?><body>'.$page->bodyHtml.'</body>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
@@ -126,7 +129,7 @@
             @else
                 {!! $flush() !!}
                 @if ($isFigure($node))
-                    <div class="{{ $variant === 'home' ? 'o1-heroshot' : 'heroshot' }}">{!! $html($node) !!}</div>
+                    <div class="{{ $variant === 'home' ? 'o1-heroshot' : 'heroshot' }}">{!! temecms_pictures($html($node), wide: $variant !== 'home') !!}</div>
                 @elseif ($tag($node) === 'ul' && $node->getElementsByTagName('li')->length > 0 && collect(iterator_to_array($node->getElementsByTagName('li')))->every(fn ($li) => ($li->getElementsByTagName('p')->item(0)?->firstChild ?? $li->firstChild) instanceof DOMElement && ($li->getElementsByTagName('p')->item(0)?->firstChild ?? $li->firstChild)->tagName === 'strong'))
                     <dl class="facts-strip">
                         @foreach ($node->getElementsByTagName('li') as $li)
@@ -349,3 +352,4 @@
         @endif
     @endif
 @endforeach
+{!! temecms_pictures((string) ob_get_clean()) !!}
