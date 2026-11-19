@@ -159,3 +159,11 @@ it('sets the footer\'s words between asterisks in italics, and draws the tagline
         ->and($words(''))->toContain('<p>A content management system for publications. Made by Krafty Sprouts Media.</p>')
         ->and($words('<b>*x*</b>'))->toContain('&lt;b&gt;<em>x</em>&lt;/b&gt;');
 });
+
+it('lists the more links and the follow button in the phone menu, whose icon turns into a cross', function (): void {
+    $html = $this->fetch('/')->getContent();
+
+    expect($html)->toMatch('#<ul class="menu-more">\s*<li><a href="/faq/">FAQ</a></li><li><a href="/roadmap/">Roadmap</a></li>\s*</ul>#')
+        ->toContain('class="menu-close"')
+        ->toMatch('/<div class="mobile-nav">.*class="btn btn-primary"/s');
+});

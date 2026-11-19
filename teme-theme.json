@@ -233,6 +233,14 @@
             "default": "https://github.com/temecms"
         },
         {
+            "key": "menu_more",
+            "type": "text",
+            "label": "More links in the phone menu",
+            "description": "Links the menu on small screens shows under the header's menu, as label=address pairs split by commas, such as FAQ=/faq/, Roadmap=/roadmap/. Leave it empty to show only the header's menu.",
+            "fieldset": "site",
+            "default": "FAQ=/faq/, Roadmap=/roadmap/"
+        },
+        {
             "key": "status_line",
             "type": "text",
             "label": "Status line",

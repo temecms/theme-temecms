@@ -22,6 +22,7 @@ Closer to the drawings, everywhere:
 - Product pictures on a phone show a version drawn for a phone, and no picture runs past the screen's edge.
 - Product pictures are dark in dark mode.
 - The footer as drawn: a new setting, The footer's line (words between asterisks in italics), the status line on the left and the licence on the right.
+- The phone menu lists FAQ and Roadmap under the header's menu (a new setting, More links in the phone menu), with dividers, a full-width GitHub button, and a cross to close it.
 
 What a site owner does: update the temecms-site plugin to 1.1.0 and run its directory sync, update this theme, make a page with the template Submit a plugin or theme at `/submit/`, and fill the menu `docs-popular` and the region `docs-whats-new` if you want those sections.
 
