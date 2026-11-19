@@ -14,6 +14,10 @@ The free plugin and theme directory, as drawn: the theme draws the fields the te
 - The regions `plugins-intro`, `plugins-how`, `themes-intro` and `themes-build` are no longer drawn; they stay declared so what they hold isn't lost.
 - The browser checks run light and dark, and `tests/states.mjs` checks the pages' open states (search, preview, tabs, the forms' answers).
 
+Closer to the drawings, everywhere:
+
+- The footer reaches the window's foot on a short page, with no band under it.
+
 What a site owner does: update the temecms-site plugin to 1.1.0 and run its directory sync, update this theme, make a page with the template Submit a plugin or theme at `/submit/`, and fill the menu `docs-popular` and the region `docs-whats-new` if you want those sections.
 
 ## 0.2.0

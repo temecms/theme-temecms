@@ -27,6 +27,9 @@
     .site-head { position: sticky; }
     .skip, .teme-skip-link { z-index: 600; }
     main:focus { outline: none; }
+    /* the page fills at least the window, so the footer sits at its foot on a short page */
+    body { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+    body > main { flex: 1 0 auto; }
 
     /* core's cards, as the site draws them */
     .card-image { margin: 0; }

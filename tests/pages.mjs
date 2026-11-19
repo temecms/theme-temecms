@@ -1,5 +1,7 @@
 // Browser checks of every page of the site loaded with the temecms-site plugin's content, at 1280 and 375 wide, light and dark: it answers 200, it has one h1,
-// headings are in order, every picture has alt text and a size, nothing scrolls sideways, and axe finds no violation.
+// headings are in order, every picture has alt text and a size, nothing scrolls sideways, and axe finds no violation;
+// and the drawn layout holds: the footer reaches the window's foot, centred headings are centred, no picture starts off
+// the left edge, and no Copy button sits over code.
 // Run against that site:  BASE=http://localhost:8000 node tests/pages.mjs [name ...]     (exit code 1 on any failure)
 import { chromium } from 'playwright-core';
 import AxeBuilder from '@axe-core/playwright';
@@ -31,6 +33,8 @@ for (const [name, url] of Object.entries(PAGES)) {
                 imgsWithoutSize: [...document.querySelectorAll('img')].filter((i) => !i.getAttribute('width') || !i.getAttribute('height')).length,
                 sideways: document.documentElement.scrollWidth > window.innerWidth + 1,
                 lang: document.documentElement.lang,
+                // the footer reaches the window's foot on a short page
+                footShort: (() => { const f = document.querySelector('.site-foot'); return f ? f.getBoundingClientRect().bottom + window.scrollY < window.innerHeight - 1 : false; })(),
             };
         });
         const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']).analyze();
@@ -42,6 +46,7 @@ for (const [name, url] of Object.entries(PAGES)) {
         if (facts.imgsWithoutAlt) problems.push(`${facts.imgsWithoutAlt} img without alt`);
         if (facts.imgsWithoutSize) problems.push(`${facts.imgsWithoutSize} img without width/height`);
         if (facts.sideways) problems.push('scrolls sideways');
+        if (facts.footShort) problems.push('a band under the footer');
         for (const v of axe.violations) problems.push(`axe ${v.id} (${v.impact}): ${v.nodes.length} node(s), e.g. ${v.nodes[0]?.target?.join(' ')}`);
         if (problems.length) failures += 1;
         results.push({ page: name, width: w, scheme, status: res?.status(), problems });
