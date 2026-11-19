@@ -166,3 +166,11 @@
     li > .card-snippet { margin-top: 10px; }
     .facts-strip { list-style: none; }
 }
+
+@layer teme.theme {
+    /* a theme's README pictures: the wide one in the column, the phone one at a phone's size over its lower corner */
+    .shot-duo { position: relative; margin-block: 2rem; padding-inline-end: 9%; padding-block-end: 9%; }
+    .shot-duo > .card-image { margin: 0 !important; }
+    .shot-duo > .pair-phone { position: absolute; inset-inline-end: 0; inset-block-end: 0; width: 22%; max-width: 170px; }
+    .shot-duo > .pair-phone img { width: 100%; height: auto; filter: drop-shadow(0 8px 18px rgb(0 0 0 / 0.18)); }
+}

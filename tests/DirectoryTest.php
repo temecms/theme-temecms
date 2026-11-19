@@ -299,3 +299,14 @@ it('links a showcase site\'s theme and plugins and counts its kinds', function (
         ->toContain('action="/temecms-site/submit-site"')
         ->toContain('>temecms.com</a>');
 });
+
+it('sets a README\'s wide picture and the phone picture after it as one composition, and leaves other pictures alone', function (): void {
+    $wide = fn (string $name): string => '<figure class="card-image card-image--wide"><img src="/m/'.$name.'-w920.webp" alt="On a wide screen" width="920" height="562"></figure>';
+    $html = drawView('partials.dir.overview', ['listing' => temecms_listing(temeSeo()), 'html' => '<p>Intro.</p>'
+        .$wide('site-desktop').'<figure class="card-image card-image--column"><img src="/m/site-phone-w240.webp" alt="On a phone" width="240" height="491"></figure>'
+        .$wide('chart').'<figure class="card-image card-image--column"><img src="/m/table-w640.webp" alt="A table" width="640" height="400"></figure>']);
+
+    expect(substr_count($html, 'class="shot-duo"'))->toBe(1)
+        ->and($html)->toMatch('/<div class="shot-duo"><figure class="card-image card-image--wide">.*?site-desktop.*?<figure class="card-image card-image--column pair-phone">.*?site-phone.*?<\/figure><\/div>/s')
+        ->and($html)->toContain('<figure class="card-image card-image--column"><img src="/m/table-w640.webp"');
+});

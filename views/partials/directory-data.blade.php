@@ -395,6 +395,28 @@
             ];
         }
 
+        /**
+         * A README's wide picture followed by a phone picture, set as one composition: the wide picture in the column
+         * and the phone picture at a phone's size over its lower corner. A phone picture is one whose text names a
+         * phone or that is taller than it is wide. Other pictures stay as they are.
+         */
+        function temecms_pair_shots(string $html): string
+        {
+            $wide = '<figure class="card-image card-image--wide"[^>]*>(?:(?!<\/figure>).)*<\/figure>';
+            $narrow = '<figure class="card-image card-image--column"[^>]*>(?:(?!<\/figure>).)*<\/figure>';
+
+            return (string) preg_replace_callback('/('.$wide.')\s*('.$narrow.')/s', function (array $m): string {
+                $isPhone = preg_match('/<img[^>]*\b(?:alt|src)="[^"]*\b(?:phone|mobile)\b/i', $m[2])
+                    || (preg_match('/\bwidth="(\d+)"[^>]*\bheight="(\d+)"/', $m[2], $size) && (int) $size[2] > (int) $size[1]);
+                if (! $isPhone) {
+                    return $m[0];
+                }
+                $phone = str_replace('card-image card-image--column', 'card-image card-image--column pair-phone', $m[2]);
+
+                return '<div class="shot-duo">'.$m[1].$phone.'</div>';
+            }, $html);
+        }
+
         /** "Teme 1.2": the newest Teme a listing works with, or '' when it names none. */
         function temecms_works_short(array $listing): string
         {
