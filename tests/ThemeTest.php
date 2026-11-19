@@ -167,3 +167,13 @@ it('lists the more links and the follow button in the phone menu, whose icon tur
         ->toContain('class="menu-close"')
         ->toMatch('/<div class="mobile-nav">.*class="btn btn-primary"/s');
 });
+
+it('links the theme\'s own icon, in its light and dark tones, with a PNG for browsers without SVG icons', function (): void {
+    $html = $this->fetch('/')->getContent();
+    $svg = (string) file_get_contents(dirname(__DIR__).'/public/icon.svg');
+
+    expect($html)->toContain('<link rel="icon" href="'.asset('themes/temecms/icon.svg').'" type="image/svg+xml">')
+        ->toContain('<link rel="icon" href="'.asset('themes/temecms/icon-32.png').'" type="image/png" sizes="32x32">')
+        ->and($svg)->toContain('@media (prefers-color-scheme:dark)')
+        ->and(is_file(dirname(__DIR__).'/public/icon-32.png'))->toBeTrue();
+});
