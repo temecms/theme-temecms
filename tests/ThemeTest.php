@@ -9,11 +9,13 @@ declare(strict_types=1);
  *   php artisan test /path/to/theme-temecms/tests
  *
  * The kit makes empty items, so what these check is what a theme alone decides: which template answers, the
- * one h1, the footer's words and the follow link from the theme's settings. What the seeded site's pages look
- * like (sections, pictures, axe at 1280 and 375) is checked by `node tests/pages.mjs` against a seeded site.
+ * one h1, the footer's words and the follow link from the theme's settings. What the site's pages look
+ * like (sections, pictures, axe at 1280 and 375) is checked by `node tests/pages.mjs` against a site loaded
+ * with the temecms-site plugin's starting content.
  */
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Blade;
 use Teme\Testing\TemeTestCase;
 
 uses(TemeTestCase::class);
@@ -113,4 +115,28 @@ it('draws the header and footer menus as labelled landmarks', function (): void 
     preg_match_all('/<nav(?![^>]*(?:aria-label|data-teme-unbound))[^>]*>/i', $html, $unlabelled);
 
     expect($unlabelled[0])->toBe([]);
+});
+
+/** The documentation's version label, drawn from these values alone, as the theme's settings and Teme give them. */
+function docsVersion(array $data): string
+{
+    return Blade::render((string) file_get_contents(dirname(__DIR__).'/views/partials/docs-version.blade.php'), $data);
+}
+
+it('labels the documentation with the version setting when it is set', function (): void {
+    $html = docsVersion(['themeSettings' => ['docs_version' => '1.1'], 'teme' => ['version' => '1.2.0', 'release' => '1.2.0']]);
+
+    expect($html)->toContain('<b>1.1</b>');
+});
+
+it('labels the documentation with the running release when the setting is empty', function (): void {
+    $html = docsVersion(['themeSettings' => ['docs_version' => ''], 'teme' => ['version' => '1.2.0', 'release' => '1.2.0']]);
+
+    expect($html)->toContain('<b>1.2.0</b>');
+});
+
+it('shows no version label when the setting is empty and Teme gives no release', function (): void {
+    $html = docsVersion(['themeSettings' => ['docs_version' => '']]);
+
+    expect($html)->not->toContain('class="ver"');
 });

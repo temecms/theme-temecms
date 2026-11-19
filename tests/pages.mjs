@@ -1,6 +1,6 @@
-// Browser checks of every page of the seeded site, at 1280 and 375 wide: it answers 200, it has one h1,
+// Browser checks of every page of the site loaded with the temecms-site plugin's content, at 1280 and 375 wide: it answers 200, it has one h1,
 // headings are in order, every picture has alt text and a size, nothing scrolls sideways, and axe finds no violation.
-// Run against a seeded site:  BASE=http://localhost:8000 node tests/pages.mjs      (exit code 1 on any failure)
+// Run against that site:  BASE=http://localhost:8000 node tests/pages.mjs      (exit code 1 on any failure)
 import { chromium } from 'playwright-core';
 import AxeBuilder from '@axe-core/playwright';
 import fs from 'node:fs';

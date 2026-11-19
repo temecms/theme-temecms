@@ -30,7 +30,7 @@
             <div class="wrap">
                 <nav class="crumbs" aria-label="{{ __('Breadcrumb') }}"><b>{{ $page->subject?->title }}</b></nav>
                 @include('theme::partials.search-form', ['id' => 'docs-q', 'label' => __('Search the documentation'), 'placeholder' => __('Search the docs  ( / )'), 'filter' => true])
-                <div class="end"><span class="ver"><span>{{ __('Version') }}</span> <b>{{ $themeSettings['docs_version'] ?? '' }}</b></span></div>
+                @include('theme::partials.docs-version')
             </div>
         </div>
 
