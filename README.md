@@ -45,13 +45,16 @@ To work on a local copy instead, add the theme's folder, as an absolute path, to
 |---|---|
 | `single-page-home` | The home page: opening, four stops, closing |
 | `single-page-landing`, `-faq`, `-roadmap`, `single-page` | Pages made of an opening and sections; questions; three columns; plain pages |
-| `archive-doc`, `single-doc` | The documentation home, and a guide with its tree, proof mark, "On this page", previous and next |
-| `archive-plugin`, `single-plugin` | The plugin directory (search, categories, rows) and a plugin's page |
-| `archive-theme`, `single-theme` | The theme directory and a theme's page |
+| `archive-doc`, `single-doc` | The documentation home (a card per audience, popular pages, what's new) and a guide, in three columns: the tree with the version switcher, the article, "On this page". Search with Ctrl K (⌘ K, or /); code with its language and Copy; Note, Tip and Warning; previous and next; "Was this page helpful?" |
+| `archive-plugin`, `single-plugin` | Plugins: search, categories with counts, "Works with Teme", sort, counts, page numbers, and on the first page the strips Recently updated, New and Picked by the Teme team. A plugin's page: its header with Install and Source, the tabs Overview, Screenshots, Changelog, Permissions and Support, and the facts beside them (the review, version, releases, Teme range, categories, package, GitHub, "Ratings and reviews: later", the author with more from them, and Report this listing) |
+| `archive-theme`, `single-theme` | Themes, the same as Plugins with picture cards. A theme's page: a gallery in a laptop and a phone frame, Preview before Install, Overview and Changelog, and the facts |
+| `archive-showcase` | Showcase: sites built with Teme, by kind, each with its theme and plugins, and the form to add yours |
 | `latest`, `single`, `archive`, `search` | The blog, a post, categories and tags, search |
 | `notfound`, `error`, `index` | Not found, errors, the fallback |
 
-Page templates an editor can pick: Default, Home, Landing (an opening, then sections), Questions and answers, Roadmap (three columns).
+Page templates an editor can pick: Default, Home, Landing (an opening, then sections), Questions and answers, Roadmap (three columns), and Submit a plugin or theme (the form, the four public steps and the rules in brief).
+
+The directory, Submit and Showcase read the temecms-site plugin's fields (see its README, *The directory*): a listing's summary, icon, categories, latest version, Teme versions, author, links, stars, issues, releases, permissions, screenshots and changelog, and a showcase site's address, kind, screenshot, theme and plugins. The README is the listing's body. A listing's categories are keys; the theme words the directory's own (SEO, Editing, Content and so on) and takes any other from the category's term. The Submit and Showcase forms post to the plugin, which answers back to the page with `?submitted=…` or `?error=…`; the theme's script shows the answer. Without the script every listing shows, unfiltered.
 
 ### How a page's content becomes sections
 
@@ -68,7 +71,9 @@ Landing, home, FAQ and roadmap pages split their content at horizontal rules: th
 |---|---|
 | `primary` | The header |
 | `footer-teme`, `footer-build`, `footer-project` | The footer's three columns |
-| `docs-editors`, `docs-operators`, `docs-developers` | The documentation's three guides |
+| `docs-editors`, `docs-operators`, `docs-developers` | The documentation's three guides, and the first page of each on the docs home's audience cards |
+| `docs` | The documentation's tree: each heading (or item with pages under it) a group. Empty, the tree is the three guides' menus, each of their groups a heading |
+| `docs-popular` | The docs home's popular pages |
 
 ## Regions
 
@@ -78,12 +83,9 @@ Landing, home, FAQ and roadmap pages split their content at horizontal rules: th
 | `after-content` | After the content of a page or post | callout, button, site code, featured posts |
 | `blog-intro` | Blog: opening text | callout, button, image |
 | `docs-intro` | Documentation: opening text | callout, button, image |
-| `plugins-intro` | Plugins: opening text | callout, button, image |
-| `plugins-how` | Plugins: how they work | callout, button, image |
-| `themes-intro` | Themes: opening text | callout, button, image |
-| `themes-build` | Themes: build a theme | callout, button, image |
+| `docs-whats-new` | Documentation home: what's new (empty leaves the section out) | callout, button, image |
 
-Fill them under Content › Regions.
+Fill them under Content › Regions. The regions `plugins-intro`, `plugins-how`, `themes-intro` and `themes-build` are no longer drawn: the directory pages say their own words, as drawn. They stay declared so what they hold isn't lost.
 
 ## Settings
 
@@ -98,6 +100,13 @@ Under Site › Themes:
 | Licence line (empty shows none) | MIT licence |
 | Show the latest blog posts on the home page | off |
 | Documentation version label (empty shows the Teme release the site runs) | empty |
+| Documentation versions, latest first, as `label=address` separated by commas (`1.2=/docs/, 1.1=/docs/1.1/`); with two or more the tree shows a switcher, and an older version's pages a banner | empty |
+| The documentation home's address | /docs/ |
+| Where "this page didn't help" goes | https://github.com/temecms/teme/issues/new |
+| The Plugins page's address | /plugins/ |
+| The Themes page's address | /theme-directory/ |
+| The Submit page's address (the page with the template Submit a plugin or theme) | /submit/ |
+| Writing a plugin, Making a theme, the directory's full rules: their addresses (empty hides the link) | empty |
 
 ## The site's content
 

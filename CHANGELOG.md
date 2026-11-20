@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.3.0
+
+The free plugin and theme directory, as drawn: the theme draws the fields the temecms-site plugin (1.1.0) fills from the directory's index.
+
+- **Plugins** and **Themes** are two pages. Search, categories with their counts, "Works with Teme", sort, the count, equal cards (pictures for themes) and page numbers; on the first page, the strips Recently updated, New and Picked by the Teme team. Without the script every listing shows.
+- **A plugin's page**: its header with Install and Source, five tabs (Overview, Screenshots, Changelog, Permissions, Support) and the facts beside them, with "Ratings and reviews: later", more from the author, and Report this listing.
+- **A theme's page**: a gallery in a laptop and a phone frame, and Preview before Install.
+- **Submit a plugin or theme**, a page template: the form, which the plugin turns into a pull request on the directory, the four public steps and the rules in brief. The plugin's answer shows on the page.
+- **Showcase**: sites built with Teme, by kind, each with its theme and plugins, and the form to add a site.
+- **The documentation** in three columns: the tree with a version switcher, the article, "On this page". Search with Ctrl K, ⌘ K or /; code with its language and Copy; Note, Tip and Warning; previous and next; "Was this page helpful?". The docs home has a card per audience, popular pages and what's new.
+- New settings: the addresses of Plugins, Themes, Submit, the docs home and the guides they link to, the documentation's versions, and where "this page didn't help" goes. New menu slots `docs` and `docs-popular`, and the region `docs-whats-new`.
+- The regions `plugins-intro`, `plugins-how`, `themes-intro` and `themes-build` are no longer drawn; they stay declared so what they hold isn't lost.
+- The browser checks run light and dark, and `tests/states.mjs` checks the pages' open states (search, preview, tabs, the forms' answers).
+
+Closer to the drawings, everywhere:
+
+- The footer reaches the window's foot on a short page, with no band under it.
+- A centred section's heading sits on the page's centre.
+- A theme's README pictures: the wide picture stays in the column and the phone picture sits at a phone's size over its lower corner.
+- Product pictures on a phone show a version drawn for a phone, and no picture runs past the screen's edge.
+- Product pictures are dark in dark mode.
+- The footer as drawn: a new setting, The footer's line (words between asterisks in italics), the status line on the left and the licence on the right.
+- The phone menu lists FAQ and Roadmap under the header's menu (a new setting, More links in the phone menu), with dividers, a full-width GitHub button, and a cross to close it.
+- The Teme icon is the browser tab's icon, light and dark, with a PNG for browsers without SVG icons.
+- A code block's name and Copy sit in a bar over the code, and a long line scrolls inside the block.
+- Hosting, Developers and Moving from WordPress are laid out as drawn: tables, icons, step cards, code beside its words, the ten places as a grid of five by two, and the usual space between sections.
+- A plugin's or theme's Overview leaves out an opening paragraph that repeats the summary in its header.
+
+What a site owner does: update the temecms-site plugin to 1.1.0 and run its directory sync, update this theme, make a page with the template Submit a plugin or theme at `/submit/`, and fill the menu `docs-popular` and the region `docs-whats-new` if you want those sections.
+
 ## 0.2.0
 
 The theme is only the looks again. temecms.com's content moved to the new **temecms-site** plugin (`temecms/temecms-site`): the content types Documentation, Plugin directory and Theme directory with their fields, and the seed that loads the pages, posts, guides, listings, pictures, regions, menus and settings. Switching themes no longer takes the site's types with it, and the admin's menu no longer shows Plugins and Themes twice.

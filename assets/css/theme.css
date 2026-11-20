@@ -1,3 +1,4 @@
 /* TemeCMS: the theme's one stylesheet. base.css is the drawing's rules on the theme's tokens; extra.css draws what the drawing built by script. */
 @import './base.css';
 @import './extra.css';
+@import './directory.css';

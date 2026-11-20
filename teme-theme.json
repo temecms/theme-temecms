@@ -2,7 +2,7 @@
     "manifest": 1,
     "code": "temecms",
     "name": "TemeCMS",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "The theme of temecms.com, Teme's own public site: a product home page, documentation, plugin and theme directories, and a blog, in neutral grounds with the Ember accent.",
     "author": "TemeCMS",
     "author_url": "https://github.com/temecms",
@@ -102,7 +102,8 @@
             "home": "Home",
             "landing": "Landing: an opening, then sections",
             "faq": "Questions and answers",
-            "roadmap": "Roadmap: three columns"
+            "roadmap": "Roadmap: three columns",
+            "submit": "Submit a plugin or theme"
         }
     },
     "navigations": {
@@ -112,7 +113,9 @@
         "footer-project": "Footer: Project",
         "docs-editors": "Docs: the editors guide",
         "docs-operators": "Docs: the operators guide",
-        "docs-developers": "Docs: for developers"
+        "docs-developers": "Docs: for developers",
+        "docs": "Docs: the tree (headings are its groups)",
+        "docs-popular": "Docs: popular pages"
     },
     "regions": {
         "home-latest": {
@@ -185,6 +188,15 @@
                 "image"
             ],
             "max": 8
+        },
+        "docs-whats-new": {
+            "label": "Documentation: what's new",
+            "cards": [
+                "callout",
+                "button",
+                "image"
+            ],
+            "max": 8
         }
     },
     "settings": [
@@ -195,6 +207,14 @@
             "description": "One plain line in the footer saying who makes the software the site is about.",
             "fieldset": "site",
             "default": "Made by Krafty Sprouts Media."
+        },
+        {
+            "key": "footer_line",
+            "type": "text",
+            "label": "The footer's line",
+            "description": "What the site is and who makes it, in one line under the footer's icon. Words between asterisks are set in italics, as in Teme is Ijaw for *create*. Leave it empty to show the site's tagline and the maker line instead.",
+            "fieldset": "site",
+            "default": "A content management system for publications, made by Krafty Sprouts Media. Teme is Ijaw for *create*."
         },
         {
             "key": "follow_label",
@@ -211,6 +231,14 @@
             "description": "An https address. Anything else is left out and the link falls back to https://github.com/temecms.",
             "fieldset": "site",
             "default": "https://github.com/temecms"
+        },
+        {
+            "key": "menu_more",
+            "type": "text",
+            "label": "More links in the phone menu",
+            "description": "Links the menu on small screens shows under the header's menu, as label=address pairs split by commas, such as FAQ=/faq/, Roadmap=/roadmap/. Leave it empty to show only the header's menu.",
+            "fieldset": "site",
+            "default": "FAQ=/faq/, Roadmap=/roadmap/"
         },
         {
             "key": "status_line",
@@ -243,6 +271,78 @@
             "description": "The version the documentation pages say they describe, such as 1.2. Leave it empty to show the Teme release the site runs; with a Teme too old to say, empty shows none.",
             "fieldset": "content",
             "default": ""
+        },
+        {
+            "key": "plugins_address",
+            "type": "text",
+            "label": "The Plugins page's address",
+            "description": "Where the plugin directory is, such as /plugins/. Its pages link back to it.",
+            "fieldset": "archive",
+            "default": "/plugins/"
+        },
+        {
+            "key": "themes_address",
+            "type": "text",
+            "label": "The Themes page's address",
+            "description": "Where the theme directory is, such as /theme-directory/.",
+            "fieldset": "archive",
+            "default": "/theme-directory/"
+        },
+        {
+            "key": "submit_address",
+            "type": "text",
+            "label": "The Submit page's address",
+            "description": "The page that uses the template Submit a plugin or theme. Empty hides the links to it.",
+            "fieldset": "archive",
+            "default": "/submit/"
+        },
+        {
+            "key": "plugin_guide_address",
+            "type": "text",
+            "label": "Writing a plugin: its address",
+            "description": "The guide the Plugins page points authors to. Empty hides the link.",
+            "fieldset": "archive",
+            "default": ""
+        },
+        {
+            "key": "theme_guide_address",
+            "type": "text",
+            "label": "Making a theme: its address",
+            "description": "The guide the Themes page points authors to. Empty hides the link.",
+            "fieldset": "archive",
+            "default": ""
+        },
+        {
+            "key": "rules_address",
+            "type": "text",
+            "label": "The directory's full rules: their address",
+            "description": "Publishing to the directory, in the developers' docs, linked from the Submit page. Empty hides the link.",
+            "fieldset": "archive",
+            "default": ""
+        },
+        {
+            "key": "docs_address",
+            "type": "text",
+            "label": "The documentation home's address",
+            "description": "Where the docs home is, such as /docs/. The docs' breadcrumbs and search start there.",
+            "fieldset": "content",
+            "default": "/docs/"
+        },
+        {
+            "key": "docs_versions",
+            "type": "text",
+            "label": "Documentation versions",
+            "description": "The versions the switcher offers, the latest first, as label=address pairs split by commas, such as 1.2=/docs/, 1.1=/docs/1.1/. Empty shows only the version label.",
+            "fieldset": "content",
+            "default": ""
+        },
+        {
+            "key": "docs_feedback_address",
+            "type": "text",
+            "label": "Where \"this page didn't help\" goes",
+            "description": "An address readers can tell you what was missing, such as a new issue on GitHub. Empty shows only the thanks.",
+            "fieldset": "content",
+            "default": "https://github.com/temecms/teme/issues/new"
         }
     ],
     "assets": {
