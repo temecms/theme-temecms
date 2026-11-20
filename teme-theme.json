@@ -2,7 +2,7 @@
     "manifest": 1,
     "code": "temecms",
     "name": "TemeCMS",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "The theme of temecms.com, Teme's own public site: a product home page, documentation, plugin and theme directories, and a blog, in neutral grounds with the Ember accent.",
     "author": "TemeCMS",
     "author_url": "https://github.com/temecms",

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 The free plugin and theme directory, as drawn: the theme draws the fields the temecms-site plugin (1.1.0) fills from the directory's index.
 
